@@ -1,0 +1,47 @@
+{
+  "extends": "airbnb",
+  "rules": {
+    "import/no-extraneous-dependencies": "off",
+    "import/no-unresolved": "off",
+    "no-var": 1,
+    "no-plusplus": 0,
+    "no-bitwise": 1,
+    "no-mixed-operators": 1,
+    "global-require": 1,
+    "eqeqeq": ["error"],
+    "camelcase": ["error"],
+    "comma-dangle": ["error", "never" ],
+    "space-in-parens": ["warn", "always"],
+    "array-bracket-spacing": ["warn", "always"],
+    "comma-spacing": ["warn", { "before": false, "after": true }],
+    "generator-star-spacing": ["warn", {"before": true, "after": false}],
+    "arrow-parens": ["error", "as-needed"],
+    "no-underscore-dangle": 0,
+    "no-console": 0,
+    "func-names": 0,
+    "consistent-return": ["warn", {"treatUndefinedAsUnspecified": true}],
+    "no-nested-ternary": 1,
+    "import/no-dynamic-require": 1,
+    "no-unused-expressions": ["warn"],
+    "no-buffer-constructor": ["warn"],
+    "prefer-const": 1,
+    "no-unused-vars": 1,
+    "no-param-reassign": 1,
+    "no-useless-constructor": 1,
+    "class-methods-use-this": 1,
+    "operator-linebreak": ["warn", "after"],
+    "max-len": ["warn", 150],
+    "brace-style": [ "warn", "1tbs", { "allowSingleLine": true } ],
+    "no-template-curly-in-string": 0,
+    "object-curly-newline": [ 0, { "multiline": true} ],
+    "no-restricted-syntax": [
+      "error",
+      "ForInStatement",
+      "LabeledStatement",
+      "WithStatement",
+    ]
+  },
+  "env": {
+    "mocha": true
+  }
+}

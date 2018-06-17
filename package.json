@@ -1,0 +1,35 @@
+{
+  "name": "fit-integration-tests",
+  "version": "0.0.1",
+  "description": "FIT (Fast Integration Tests) is a tool to run integration tests fast and in parallel.",
+  "main": "index.js",
+  "dependencies": {
+    "ngrok": "^3.0.1"
+  },
+  "devDependencies": {
+    "eslint": "^4.17.0",
+    "eslint-config-airbnb": "^16.1.0",
+    "eslint-config-strict": "^14.0.1",
+    "eslint-plugin-import": "^2.8.0",
+    "eslint-plugin-jsx-a11y": "^6.0.3",
+    "eslint-plugin-node": "^6.0.0",
+    "eslint-plugin-react": "^7.6.1",
+    "request-promise": "^4.2.2"
+  },
+  "scripts": {
+    "lint": "eslint './{,!(node_modules)/**}/*.js' ./*.js --fix"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/szanata/fit-integration-tests.git"
+  },
+  "author": "Stéfano Zanata <contato@szanata.com>",
+  "bugs": {
+    "url": "https://github.com/szanata/fit-integration-tests/issues"
+  },
+  "homepage": "https://github.com/szanata/fit-integration-tests#readme",
+  "directories": {
+    "test": "test"
+  },
+  "license": "ISC"
+}
