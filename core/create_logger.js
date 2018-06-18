@@ -40,7 +40,7 @@ module.exports = () => {
     pass: message => logMain( stack, { color: green, label: 'Pass', message } ),
     fail: message => logMain( stack, { color: red, label: 'Fail', message } ),
     error: ( message, details ) => {
-      logMain( stack, { color: red, label: 'Err!', message, weight: 'dim' } );
+      logMain( stack, { color: red, label: 'Err!', message, weight: dim } );
       if ( details ) {
         logSub( stack, { label: 'Details', text: details } );
       }

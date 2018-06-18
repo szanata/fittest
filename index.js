@@ -52,7 +52,7 @@ module.exports = {
 
       loggers.forEach( flushLogger );
     } catch ( err ) {
-      mainLogger.fail( 'Framework error' );
+      mainLogger.fail( 'Startup error' );
       console.error( err );
       exitCode = 1;
     }

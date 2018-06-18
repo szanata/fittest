@@ -7,7 +7,7 @@ module.exports = {
   },
 
   async exec( env, ctx, logger ) {
-    logger.step( 'Execution 1 start' );
+    logger.flow( 'Test 1' );
 
     logger.step( 'Doing a get to the server url' );
     rp( env.serverUrl );

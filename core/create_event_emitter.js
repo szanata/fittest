@@ -1,4 +1,5 @@
 const EventEmitter = require( 'events' );
+const oneMinute = 60000;
 
 module.exports = () => {
   const emitter = new EventEmitter();
@@ -13,11 +14,11 @@ module.exports = () => {
       return emitterId;
     },
 
-    async on( event ) {
+    async on( event, threshold = oneMinute ) {
       return new Promise( ( resolve, reject ) => {
         const timeout = setTimeout( () => {
           reject( new Error( `Timed out waiting for "${event}"" event to happen.` ) );
-        }, 60000 );
+        }, threshold );
 
         emitter.once( emitterId + event, ( ...args ) => {
           clearTimeout( timeout );
