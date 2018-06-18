@@ -5,13 +5,12 @@ const br = '\n';
 const red = '\x1b[31m';
 const blue = '\x1b[34m';
 const green = '\x1b[32m';
-const cyan = '\x1b[36m';
 const white = '\x1b[37m';
 const spc = ' ';
 
 const logSub = ( stack, { label, text } ) => {
-  const reason = `${br + dim + spc}${label}
-                  ${spc}───────${clear}`;
+  const reason = `${br + dim + spc}${label}${br}` +
+                 `${spc}───────${clear}`;
   let info = text.split( '\n' ).slice( 0, 5 ).join( '\n' );
   if ( info !== text ) {
     info += '\n... [truncated]';

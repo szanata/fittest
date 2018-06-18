@@ -5,7 +5,7 @@ module.exports = {
   },
 
   exec( env, ctx, logger ) {
-    logger.flow( 'Test 2')
+    logger.flow( 'Test 2' );
     logger.ok( 'Execution 2 done' );
   },
 
