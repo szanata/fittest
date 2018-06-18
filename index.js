@@ -46,9 +46,10 @@ module.exports = {
       if ( hasAnyFalse( results ) ) {
         mainLogger.fail( 'Tests failed. Exiting with 1.' );
         exitCode = 1;
+      } else {
+        mainLogger.pass( 'All tests passed. Exiting with 0.' );
+        exitCode = 0;
       }
-      mainLogger.pass( 'All tests passed. Exiting with 0.' );
-      exitCode = 0;
 
       loggers.forEach( flushLogger );
     } catch ( err ) {
