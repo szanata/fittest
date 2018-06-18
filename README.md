@@ -75,17 +75,17 @@ module.exports = {
   }
 };
 ```
-Methods:
+**Methods:**
 
-**createContext**: Will create a object where you can share values between `exec` and `rollback`. Is optional.
+| Name | Description |
+| ---- | ----------- |
+| *createContext* | Will create a object where you can share values between `exec` and `rollback`. Is optional. |
+| *exec* | This will have your test logic. |
+| *rollback* | This will have your rollback logic. |
 
-**exec**: This will have your test logic.
+Every test will call *createContext*, *exec* and *rollback* in order and synchronously.
 
-**rollback**: This will have your rollback logic.
-
-Every test will have the *createContext*, *exec* and *rollback* invoked in this order.
-
-Important: Each test can be a folder with a index.js file inside, or a single .js file, so the tests can be something like this:
+Each test can be a folder with a index.js file inside, or a single .js file, so the tests can be something like this:
 
 ```
 project    
@@ -101,11 +101,11 @@ project
         |-- test_3.js
 ```
 
-### Arguments
+## Test arguments
 
 Both `exec` and `rollback` receive the same arguments **env**, **ctx**, **logger**:
 
-#### **env**
+### **env**
 The test environment, this is a object containing any tools the framework provides. For now there are:
 
 | Property | Type | Description |
@@ -120,10 +120,10 @@ Async Events:
 | http-get | { req } | Invoked when serverUrl receives a GET. |
 | http-post | { req, body } | Invoked when serverUrl receives a POST, body is parsed to JSON if possible. |
 
-#### **ctx**
+### **ctx**
 The test context, created using `createContext` method, or a empty object if the method is omitted.
 
-#### **logger**
+### **logger**
 A handy tool to print test outputs.
 
 *Important: As the tests run in parallel, any stdout like console.log will be mixed across all tests, use this logger instead.*
