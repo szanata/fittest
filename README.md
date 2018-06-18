@@ -4,9 +4,11 @@ FIT (Fast Integration Tests) is a tool to run integration tests fast and in para
 ## Main features
 
 - Can execute any number of tests in parallel
+- Each test can be isolated from the other, and have its own structure
 - Each test can receive webhooks on a public url created dynamically
-- Don't rely on mocha or any other test framework
-- Can be used with chai or others assertion tools
+- The code can use a "await" to stop until a webhook be received
+- Don't rely on *mocha* or any other test framework
+- Can be used with *chai* or others assertion tools
 - Fast, I mean... really fast
 
 ## Setup
@@ -81,7 +83,23 @@ Methods:
 
 **rollback**: This will have your rollback logic.
 
-ps: Each test can be a folder with a index.js file inside, or a single .js file. 
+Every test will have the *createContext*, *exec* and *rollback* invoked in this order.
+
+Important: Each test can be a folder with a index.js file inside, or a single .js file, so the tests can be something like this:
+
+```
+project    
+|-- integration_tests
+    |-- index.js    
+    |-- tests
+        |-- test_1
+            |-- index.js
+            |-- helper.js
+            |-- other_file.js
+        |-- test_2
+            |-- index.js
+        |-- test_3.js
+```
 
 ### Arguments
 
@@ -118,3 +136,9 @@ The logger have the following methods:
 | step | Use this to print when a step inside the test will start |
 | ok | Use this to print when some step executed without errors |
 | error | Use this to print an error |
+
+### TODO
+
+- Run tests using `spawn_child`, instead of `require`
+- Make features, like the webserver, optional
+- Add a email feature, to receive and assert emails
