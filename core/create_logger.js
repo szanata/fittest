@@ -20,7 +20,7 @@ const logSub = ( stack, { label, text } ) => {
 
 const logMain = ( stack, { color, label, message = '', weight = bold } ) => {
   const head = `${weight + spc + color}┏━━━━━━┓${clear}`;
-  const body = `${weight + spc + color}┃ ${label} ┃ ${clear}`;
+  const body = `${weight + spc + color}┃ ${label} ┃${clear}${spc}`;
   const foot = `${weight + spc + color}┗━━━━━━┛${clear}`;
   const dspMessage = message.length > 80 ? `${message.substring( 0, 80 )}...` : message;
   stack.push( head + br + body + bold + dspMessage + clear + br + foot );

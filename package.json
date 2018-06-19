@@ -17,7 +17,8 @@
     "request-promise": "^4.2.2"
   },
   "scripts": {
-    "lint": "eslint './{,!(node_modules)/**}/*.js' ./*.js --fix"
+    "lint": "eslint './{,!(node_modules)/**}/*.js' ./*.js --fix",
+    "test": "node test/index.js"
   },
   "repository": {
     "type": "git",
