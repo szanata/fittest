@@ -1,4 +1,6 @@
-# FIT Integration Tssts
+# FIT Integration Tests
+https://travis-ci.org/szanata/fit-integration-tests.svg?branch=master
+
 FIT (Fast Integration Tests) is a tool to run integration tests fast and in parallel.
 
 ## Main features
