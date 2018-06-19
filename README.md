@@ -4,9 +4,11 @@ FIT (Fast Integration Tests) is a tool to run integration tests fast and in para
 ## Main features
 
 - Can execute any number of tests in parallel
+- Each test can be isolated from the other, and have its own structure
 - Each test can receive webhooks on a public url created dynamically
-- Don't rely on mocha or any other test framework
-- Can be used with chai or others assertion tools
+- The code can use a "await" to stop until a webhook be received
+- Don't rely on *mocha* or any other test framework
+- Can be used with *chai* or others assertion tools
 - Fast, I mean... really fast
 
 ## Setup
@@ -73,21 +75,37 @@ module.exports = {
   }
 };
 ```
-Methods:
+**Methods:**
 
-**createContext**: Will create a object where you can share values between `exec` and `rollback`. Is optional.
+| Name | Description |
+| ---- | ----------- |
+| *createContext* | Will create a object where you can share values between `exec` and `rollback`. Is optional. |
+| *exec* | This will have your test logic. |
+| *rollback* | This will have your rollback logic. |
 
-**exec**: This will have your test logic.
+Every test will call *createContext*, *exec* and *rollback* in order and synchronously.
 
-**rollback**: This will have your rollback logic.
+Each test can be a folder with a index.js file inside, or a single .js file, so the tests can be something like this:
 
-ps: Each test can be a folder with a index.js file inside, or a single .js file. 
+```
+project    
+|-- integration_tests
+    |-- index.js    
+    |-- tests
+        |-- test_1
+            |-- index.js
+            |-- helper.js
+            |-- other_file.js
+        |-- test_2
+            |-- index.js
+        |-- test_3.js
+```
 
-### Arguments
+## Test arguments
 
 Both `exec` and `rollback` receive the same arguments **env**, **ctx**, **logger**:
 
-#### **env**
+### **env**
 The test environment, this is a object containing any tools the framework provides. For now there are:
 
 | Property | Type | Description |
@@ -102,10 +120,10 @@ Async Events:
 | http-get | { req } | Invoked when serverUrl receives a GET. |
 | http-post | { req, body } | Invoked when serverUrl receives a POST, body is parsed to JSON if possible. |
 
-#### **ctx**
+### **ctx**
 The test context, created using `createContext` method, or a empty object if the method is omitted.
 
-#### **logger**
+### **logger**
 A handy tool to print test outputs.
 
 *Important: As the tests run in parallel, any stdout like console.log will be mixed across all tests, use this logger instead.*
@@ -118,3 +136,9 @@ The logger have the following methods:
 | step | Use this to print when a step inside the test will start |
 | ok | Use this to print when some step executed without errors |
 | error | Use this to print an error |
+
+### TODO
+
+- Run tests using `spawn_child`, instead of `require`
+- Make features, like the webserver, optional
+- Add a email feature, to receive and assert emails
