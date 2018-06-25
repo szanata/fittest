@@ -12,4 +12,4 @@ const env = { serverUrl: `${serverUrl}/${processId}`, asyncEvent: event.on };
 
 process.on( 'message', m => event.emit( m.eventName, m.args ) );
 
-runTest( test, env, logger ).then( pass => process.send( { pass, logs: logger.output } ) );
+runTest( test, env, logger ).then( pass => process.send( { testPath, pass, logs: logger.output } ) );
