@@ -3,14 +3,14 @@ const { fork } = require( 'child_process' );
 const path = require( 'path' );
 
 const createProcess = ( testPath, featuresEnv ) => {
-  const program = path.resolve( './core/runner/index.js' );
+  const runnerPath = path.join( __dirname, './runner/index.js' );
   const id = String( Math.ceil( Math.random() * 1000 ) );
   const parameters = [ testPath, id, JSON.stringify( featuresEnv ) ];
   const options = {
     stdio: [ 'pipe', 'pipe', 'pipe', 'ipc' ]
   };
 
-  const proc = fork( program, parameters, options );
+  const proc = fork( runnerPath, parameters, options );
   Reflect.set( proc, 'id', id );
 
   proc.stdout.on( 'data', data => {
