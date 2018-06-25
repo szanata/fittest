@@ -1,4 +1,4 @@
-module.exports = ( test, env, logger ) => async ( ) => {
+module.exports = async ( test, env, logger ) => {
   const ctx = test.createContext ? test.createContext() : {};
   let pass = true;
 

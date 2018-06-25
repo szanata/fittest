@@ -9,16 +9,22 @@ const parseBody = body => {
   }
 };
 
+const serializeRequest = req => ( {
+  url: req.url,
+  headers: req.headers
+} );
+
 const makeHandle = emitter => ( req, res ) => {
   const body = [];
   req.on( 'data', chunk => body.push( chunk ) ).on( 'end', () => {
-    const emitterId = req.url.split( '/' )[1];
+    const processId = req.url.split( '/' )[1];
     const parsedBody = parseBody( body );
+    const reqArg = serializeRequest( req );
     if ( req.method === 'POST' ) {
-      emitter.emit( 'any', { eventName: 'http-post', emitterId, args: { req, body: parsedBody } } );
+      emitter.emit( 'message', { eventName: 'http-post', processId, args: { req: reqArg, body: parsedBody } } );
     }
     if ( req.method === 'GET' ) {
-      emitter.emit( 'any', { eventName: 'http-get', emitterId, args: { req } } );
+      emitter.emit( 'message', { eventName: 'http-get', processId, args: { req: reqArg } } );
     }
     res.end( );
   } );
