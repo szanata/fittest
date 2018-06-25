@@ -6,8 +6,8 @@ FIT (Fast Integration Tests) is a tool to run integration tests fast and in para
 ## Main features
 
 - Can execute any number of tests in parallel
-- Each test can be isolated from the other, and have its own structure
-- Each test can receive webhooks on a public url created dynamically
+- Each test runs on a new isolated node process
+- Test can receive webhooks on a public url created dynamically
 - The code can use a "await" to stop until a webhook be received
 - Don't rely on *mocha* or any other test framework
 - Can be used with *chai* or others assertion tools
@@ -141,6 +141,5 @@ The logger have the following methods:
 
 ### TODO
 
-- Run tests using `spawn_child`, instead of `require`
 - Make features, like the webserver, optional
 - Add a email feature, to receive and assert emails
