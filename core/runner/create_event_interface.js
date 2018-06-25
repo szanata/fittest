@@ -4,15 +4,10 @@ const oneMinute = 60000;
 
 module.exports = () => {
   const emitter = new EventEmitter();
-  const emitterId = String( Math.ceil( Math.random() * 10000 ) );
 
   return {
     emit( event, data ) {
-      emitter.emit( emitterId + event, data );
-    },
-
-    get id() {
-      return emitterId;
+      emitter.emit( event, data );
     },
 
     async on( event, threshold = oneMinute ) {
@@ -21,7 +16,7 @@ module.exports = () => {
           reject( new Error( `Timed out waiting for "${event}" event to happen.` ) );
         }, threshold );
 
-        emitter.once( emitterId + event, ( ...args ) => {
+        emitter.once( event, ( ...args ) => {
           clearTimeout( timeout );
           resolve( ...args );
         } );

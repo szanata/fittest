@@ -1,64 +1,46 @@
-const createLogger = require( './core/create_logger' );
-const createLocalServer = require( './core/create_local_server' );
-const createEventEmitter = require( './core/create_event_emitter' );
-const createNgrok = require( './core/create_ngrok' );
-const createRunnableTest = require( './core/create_runnable_test' );
-const bindEventRouter = require( './core/bind_event_router' );
-const runTests = require( './core/parallel_runner' );
-const loadTests = require( './core/load_test_files' );
+const loadTestPaths = require( './core/load_test_paths' );
+const features = require( './core/features' );
+const logger = require( './core/logger' ).createStdoutLogger();
+const executeTests = require( './core/execute_tests' );
 const EventEmitter = require( 'events' );
 
-const flushLogger = logger => logger.stack.forEach( t => console.log( t ) );
+// const logResults = results => results
+//   .reduce( ( logs, r ) => logs.concat( r.logs ), [] )
+//   .forEach( line => console.log( line ) );
 
-const hasAnyFalse = arr => arr.some( r => !r );
-
-const createRunnableTests = ( tests, serverUrl, emitters, loggers ) => tests.map( ( test, i ) => {
-  const emitter = emitters[i];
-  const logger = loggers[i];
-  const env = { serverUrl: `${serverUrl}/${emitter.id}`, asyncEvent: emitter.on };
-  return createRunnableTest( test, env, logger );
-} );
-
-const createLoggers = tests => tests.map( () => createLogger() );
-
-const createEventEmitters = tests => tests.map( () => createEventEmitter() );
+const hasAnyFalse = results => results.some( r => !r.pass );
 
 module.exports = {
 
   async run( opts ) {
     let exitCode = 0;
-    const mainLogger = createLogger();
-    const mainEmitter = new EventEmitter();
+
+    const emitter = new EventEmitter();
 
     try {
-      const tests = loadTests( opts.testsDir );
+      const paths = loadTestPaths( opts.testsDir );
 
-      const server = await createLocalServer( 9333, mainEmitter );
-      const serverUrl = await createNgrok( server.address().port );
-      const loggers = createLoggers( tests );
-      const emitters = createEventEmitters( tests );
-      const runnableTests = await createRunnableTests( tests, serverUrl, emitters, loggers );
+      const featuresEnv = await features.init( emitter );
 
-      bindEventRouter( mainEmitter, emitters );
+      const results = await executeTests( paths, emitter, featuresEnv );
 
-      const results = await runTests( runnableTests );
+      results.forEach( result => {
+        logger.flow( `Test result for ${result.testPath}` );
+        result.logs.forEach( line => console.log( line ) );
+      } );
 
       if ( hasAnyFalse( results ) ) {
-        mainLogger.fail( 'Tests failed. Exiting with 1.' );
+        logger.fail( 'Tests failed. Exiting with 1.' );
         exitCode = 1;
       } else {
-        mainLogger.pass( 'All tests passed. Exiting with 0.' );
+        logger.pass( 'All tests passed. Exiting with 0.' );
         exitCode = 0;
       }
-
-      loggers.forEach( flushLogger );
     } catch ( err ) {
-      mainLogger.fail( 'Startup error' );
+      logger.fail( 'Startup error' );
       console.error( err );
       exitCode = 1;
     }
-
-    flushLogger( mainLogger );
 
     process.exit( exitCode );
   }

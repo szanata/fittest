@@ -1,6 +1,6 @@
 {
   "name": "fit-integration-tests",
-  "version": "0.0.4",
+  "version": "1.0.0",
   "description": "FIT (Fast Integration Tests) is a tool to run integration tests fast and in parallel.",
   "main": "index.js",
   "dependencies": {

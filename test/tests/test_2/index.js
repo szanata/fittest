@@ -6,7 +6,14 @@ module.exports = {
 
   exec( env, ctx, logger ) {
     logger.flow( 'Test 2' );
-    logger.ok( 'Execution 2 done' );
+
+    logger.step( 'Execution 2 will have a delay of 3 seconds' );
+    return new Promise( resolve => {
+      setTimeout( () => {
+        logger.ok( 'Execution 2 done' );
+        resolve();
+      }, 3000 );
+    } );
   },
 
   rollback( env, ctx, logger ) {
