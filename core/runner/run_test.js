@@ -26,7 +26,10 @@ module.exports = async ( name, test, env, logger, cfg, methods = [ 'exec', 'roll
   /* eslint-disable no-await-in-loop */
   for ( const method of methods ) {
     if ( !test[method] ) { return pass; }
-    pass = await runPhase( name, test, method, args, logger, timeoutTime );
+    const phasePass = await runPhase( name, test, method, args, logger, timeoutTime );
+    if ( !phasePass ) {
+      pass = false;
+    }
   }
 
   return pass;
