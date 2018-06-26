@@ -1,7 +1,8 @@
-const { br, spc, clear } = require( './std_vars' );
+const { br, clear, spc, setSpace } = require( './std_vars' );
 
 module.exports = ( { color, message = '' } ) => {
-  const prefix = `${spc + spc + spc}└${clear}${spc}${color}`;
-  const dspMessage = message.length > 80 ? `${message.substring( 0, 80 )}...` : message;
+  const prefix = `${setSpace( 3 )}└${clear}${spc}${color}`;
+  const messagesLines = message.match( /.{1,80}/g );
+  const dspMessage = messagesLines.join( `\n${setSpace( 5 )}` );
   return prefix + dspMessage + clear + br;
 };

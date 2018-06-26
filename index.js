@@ -4,10 +4,6 @@ const logger = require( './core/logger' ).createStdoutLogger();
 const executeTests = require( './core/execute_tests' );
 const EventEmitter = require( 'events' );
 
-// const logResults = results => results
-//   .reduce( ( logs, r ) => logs.concat( r.logs ), [] )
-//   .forEach( line => console.log( line ) );
-
 const hasAnyFalse = results => results.some( r => !r.pass );
 
 module.exports = {
@@ -22,10 +18,10 @@ module.exports = {
 
       const featuresEnv = await features.init( emitter );
 
-      const results = await executeTests( paths, emitter, featuresEnv );
+      const results = await executeTests( paths, emitter, featuresEnv, opts );
 
       results.forEach( result => {
-        logger.flow( `Test result for ${result.testPath}` );
+        logger.flow( `Test result for ${result.name}` );
         result.logs.forEach( line => console.log( line ) );
       } );
 

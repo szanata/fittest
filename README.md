@@ -37,7 +37,7 @@ project
 ```
 
 This is were the tests are configurated.
-Supported config for now is just the folder where the tests are stored.
+You must specific the tests directory.
 
 The content will be something in these lines:
 ```js
@@ -102,6 +102,15 @@ project
             |-- index.js
         |-- test_3.js
 ```
+
+## Test options
+
+Configurations send to `.run()` method.
+
+| Property | Type | Required | Default | Description |
+| -------- | ---- | -------- | ------- | ---------- |
+| testsDir | string | **yes** | *none* | The directory where the tests will be read from. |
+| timeoutTime | string | | 5 minutes | The time in milliseconds to wait before a test is killed due timeout. |
 
 ## Test arguments
 

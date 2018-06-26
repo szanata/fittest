@@ -7,5 +7,6 @@ module.exports = {
   blue: '\x1b[34m',
   green: '\x1b[32m',
   white: '\x1b[37m',
-  spc: ' '
+  spc: ' ',
+  setSpace: x => new Array( x ).fill( ' ' ).join( '' )
 };

@@ -2,10 +2,10 @@ const logger = require( './logger' ).createStdoutLogger();
 const { fork } = require( 'child_process' );
 const path = require( 'path' );
 
-const createProcess = ( testPath, featuresEnv ) => {
+const createProcess = ( testPath, featuresEnv, opts ) => {
   const runnerPath = path.join( __dirname, './runner/index.js' );
   const id = String( Math.ceil( Math.random() * 1000 ) );
-  const parameters = [ testPath, id, JSON.stringify( featuresEnv ) ];
+  const parameters = [ JSON.stringify( { testPath, id, featuresEnv, opts } ) ];
   const options = {
     stdio: [ 'pipe', 'pipe', 'pipe', 'ipc' ]
   };
@@ -24,14 +24,14 @@ const createProcess = ( testPath, featuresEnv ) => {
   return proc;
 };
 
-module.exports = ( paths, emitter, featuresEnv ) => {
+module.exports = ( paths, emitter, featuresEnv, opts ) => {
   const results = [];
   let completed = 0;
 
   logger.flow( `Running ${paths.length} node processes` );
 
   const testProcesses = paths.map( testPath => {
-    const proc = createProcess( testPath, featuresEnv );
+    const proc = createProcess( testPath, featuresEnv, opts );
     proc.on( 'message', result => {
       completed++;
       logger.ok( `Completed (${completed}/${paths.length})` );
@@ -58,4 +58,3 @@ module.exports = ( paths, emitter, featuresEnv ) => {
     }, 100 );
   } );
 };
-

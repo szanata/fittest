@@ -1,6 +1,6 @@
 {
   "name": "fit-integration-tests",
-  "version": "1.0.3",
+  "version": "1.1.0",
   "description": "FIT (Fast Integration Tests) is a tool to run integration tests fast and in parallel.",
   "main": "index.js",
   "dependencies": {
@@ -18,7 +18,8 @@
   },
   "scripts": {
     "lint": "eslint './{,!(node_modules)/**}/*.js' ./*.js --fix",
-    "test": "node test/index.js"
+    "test": "node test/index.js",
+    "test:broken": "node test/broken_tests"
   },
   "repository": {
     "type": "git",

@@ -5,7 +5,7 @@ const { blue, green, red, white } = require( './logger_methods/std_vars' );
 module.exports = () => {
   const output = [];
 
-  return {
+  const methods = {
     get output() { return output; },
     flow: m => output.push( logTestTask( { color: blue, label: 'Flow', message: m } ) ),
     step: m => output.push( logTestTask( { color: white, label: 'Step', message: m } ) ),
@@ -17,4 +17,8 @@ module.exports = () => {
       }
     }
   };
+
+  Object.freeze( methods );
+
+  return methods;
 };
