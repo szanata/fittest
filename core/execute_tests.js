@@ -28,7 +28,7 @@ module.exports = ( paths, emitter, featuresEnv ) => {
   const results = [];
   let completed = 0;
 
-  logger.flow( 'Starting processes' );
+  logger.flow( `Running ${paths.length} node processes` );
 
   const testProcesses = paths.map( testPath => {
     const proc = createProcess( testPath, featuresEnv );

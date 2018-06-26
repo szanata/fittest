@@ -5,7 +5,15 @@ const createEventInterface = require( './create_event_interface' );
 const [ , , testPath, processId, extras ] = process.argv;
 const { serverUrl } = JSON.parse( extras );
 
-const test = require( testPath );
+let test;
+try {
+  test = require( testPath );
+} catch ( err ) {
+  logger.error( err.message, err.stack );
+  process.send( { testPath, pass: false, logs: logger.output } );
+  process.exit( 1 );
+}
+
 const event = createEventInterface( );
 
 const env = { serverUrl: `${serverUrl}/${processId}`, asyncEvent: event.on };
