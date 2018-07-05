@@ -6,30 +6,42 @@ const EventEmitter = require( 'events' );
 
 const hasAnyFalse = results => results.some( r => !r.pass );
 
+const defaults = {
+  displaySuccessOutput: false,
+  timeoutTime: 300000
+};
+
 module.exports = {
 
   async run( opts ) {
+    const execOpts = Object.assign( { }, defaults, opts );
+
     let exitCode = 0;
 
     const emitter = new EventEmitter();
 
     try {
-      const paths = loadTestPaths( opts.testsDir );
+      const paths = loadTestPaths( execOpts.testsDir );
 
       const featuresEnv = await features.init( emitter );
 
-      const results = await executeTests( paths, emitter, featuresEnv, opts );
+      const { results, ellapsedTime } = await executeTests( paths, emitter, featuresEnv, execOpts );
 
       results.forEach( result => {
+        if ( !execOpts.displaySuccessOutput && result.pass ) {
+          return;
+        }
         logger.flow( `Test result for ${result.name}` );
         result.logs.forEach( line => console.log( line ) );
       } );
 
+      const timeInSeconds = ( ellapsedTime / 1000 ).toFixed( 2 );
+
       if ( hasAnyFalse( results ) ) {
-        logger.fail( 'Tests failed. Exiting with 1.' );
+        logger.fail( `Tests failed. Total run time ${timeInSeconds}s.` );
         exitCode = 1;
       } else {
-        logger.pass( 'All tests passed. Exiting with 0.' );
+        logger.pass( `Tests passed. Total run time ${timeInSeconds}s.` );
         exitCode = 0;
       }
     } catch ( err ) {

@@ -28,7 +28,9 @@ module.exports = ( paths, emitter, featuresEnv, opts ) => {
   const results = [];
   let completed = 0;
 
-  logger.flow( `Running ${paths.length} node processes` );
+  logger.flow( `Running ${paths.length} tests` );
+
+  const startTime = Date.now();
 
   const testProcesses = paths.map( testPath => {
     const proc = createProcess( testPath, featuresEnv, opts );
@@ -53,7 +55,8 @@ module.exports = ( paths, emitter, featuresEnv, opts ) => {
     setInterval( () => {
       if ( results.length === testProcesses.length ) {
         logger.spinStop();
-        resolve( results );
+        const ellapsedTime = Date.now() - startTime;
+        resolve( { results, ellapsedTime } );
       }
     }, 100 );
   } );

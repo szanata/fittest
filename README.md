@@ -111,6 +111,7 @@ Configurations send to `.run()` method.
 | -------- | ---- | -------- | ------- | ---------- |
 | testsDir | string | **yes** | *none* | The directory where the tests will be read from. |
 | timeoutTime | string | | 5 minutes | The time in milliseconds to wait before a test is killed due timeout. |
+| displaySuccessOutput | bool | | false | Print out logs from tests that passed. |
 
 ## Test arguments
 
@@ -141,12 +142,15 @@ A handy tool to print test outputs.
 
 The logger have the following methods:
 
-| Method | Description |
-| ------- | ----------- |
-| flow | Use this to print when some test starts |
-| step | Use this to print when a step inside the test will start |
-| ok | Use this to print when some step executed without errors |
-| error | Use this to print an error |
+| Method | Description | Output color |
+| ------ | ----------- | ------------ |
+| log | Use this to print some basic logs | white |
+| warn | Use this to print something important | yellow |
+| ok | Use this to print something good | green |
+| error | Use this to print an error | red |
+| info | Use this to print an oddity | blue |
+
+All logger methods can receive any number of arguments, which will be converted to string and concatened using a space.
 
 ### TODO
 

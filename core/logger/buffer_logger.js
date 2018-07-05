@@ -1,22 +1,24 @@
-const logTestTask = require( './logger_methods/log_test_task' );
-const logSub = require( './logger_methods/log_sub' );
-const { blue, green, red, white } = require( './logger_methods/std_vars' );
+const format = require( './logger_methods/log_test_task' );
+const { blue, green, red, white, yellow } = require( './logger_methods/std_vars' );
 
 module.exports = () => {
-  const output = [];
+  const buffer = [];
 
-  const methods = {
-    get output() { return output; },
-    flow: m => output.push( logTestTask( { color: blue, label: 'Flow', message: m } ) ),
-    step: m => output.push( logTestTask( { color: white, label: 'Step', message: m } ) ),
-    ok: m => output.push( logTestTask( { color: green, label: 'Ok  ', message: m } ) ),
-    error: ( m, details ) => {
-      output.push( logTestTask( { color: red, label: 'Err!', message: m } ) );
-      if ( details ) {
-        output.push( logSub( { label: 'Details', text: details } ) );
-      }
-    }
-  };
+  const methodsMeta = [
+    [ 'flow', blue ],
+    [ 'step', white ],
+    [ 'warn', yellow ],
+    [ 'info', blue ],
+    [ 'log', white ],
+    [ 'ok', green ],
+    [ 'error', red ]
+  ];
+
+  const methods = methodsMeta.reduce( ( obj, meta ) => Object.assign( { }, obj, {
+    [meta[0]]: ( ...args ) => buffer.push( format( { color: meta[1], messages: args } ) )
+  } ), {
+    get output() { return buffer; }
+  } );
 
   Object.freeze( methods );
 
