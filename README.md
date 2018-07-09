@@ -5,7 +5,7 @@ FIT (Fast Integration Tests) is a tool to run integration tests fast and in para
 
 ## Main features
 
-- Can execute any number of tests in parallel
+- Can execute tests in parallel (one per CPU plus one)
 - Each test runs on a new isolated node process
 - Test can receive webhooks on a public url created dynamically
 - The code can use a "await" to stop until a webhook be received
