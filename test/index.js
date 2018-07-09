@@ -3,7 +3,7 @@ const { join } = require( 'path' );
 
 const testsDir = join( __dirname, './tests' );
 
-IntegrationTestFw.run( { 
+IntegrationTestFw.run( {
   testsDir,
   displaySuccessOutput: true
 } );

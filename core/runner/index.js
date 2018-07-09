@@ -5,6 +5,7 @@ const getTestName = require( '../get_test_name' );
 
 const [ , , args ] = process.argv;
 const { testPath, id, opts, featuresEnv: { serverUrl } } = JSON.parse( args );
+
 const name = getTestName( testPath );
 
 let test;
