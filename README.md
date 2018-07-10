@@ -64,28 +64,28 @@ Your tests must have this interface:
 ```
 module.exports = {
 
-  createContext() {
-    return { }
-  },
+  before( env, ctx, logger ) { },
 
-  exec( env, ctx, logger ) {
+  exec( env, ctx, logger ) { },
 
-  },
-
-  rollback( env, ctx, logger ) {
-
-  }
+  after( env, ctx, logger ) { }
 };
 ```
-**Methods:**
+**Test Phases:**
+
+Every test have 3 distinct phases. The main phase `exec` is mandatory.
+
+If any phase fails, the tests are considered failing.
+
+Phases run in order and synchronously.
 
 | Name | Description |
 | ---- | ----------- |
-| *createContext* | Will create a object where you can share values between `exec` and `rollback`. Is optional. |
-| *exec* | This will have your test logic. |
-| *rollback* | This will have your rollback logic. |
+| *before* | This will run before the `exec` method. If it fails, the test stops here, failing. |
+| *exec* | This will have your test logic. If it fails, the next phase will run anyway. The tests failed. |
+| *after* | This will run after the `exec` method. If if fails, the tests fail. |
 
-Every test will call *createContext*, *exec* and *rollback* in order and synchronously.
+**Tests folders:**
 
 Each test can be a folder with a index.js file inside, or a single .js file, so the tests can be something like this:
 
@@ -115,10 +115,10 @@ Configurations send to `.run()` method.
 
 ## Test arguments
 
-Both `exec` and `rollback` receive the same arguments **env**, **ctx**, **logger**:
+All test methods (`before`, `exec` and `rollback`) receive the same arguments **env**, **ctx**, **logger**:
 
 ### **env**
-The test environment, this is a object containing any tools the framework provides. For now there are:
+The test environment, this is a object containing any tools the framework provides.
 
 | Property | Type | Description |
 | -------- | ---- | ----------- |
@@ -133,7 +133,7 @@ Async Events:
 | http-post | { req, body } | Invoked when serverUrl receives a POST, body is parsed to JSON if possible. |
 
 ### **ctx**
-The test context, created using `createContext` method, or a empty object if the method is omitted.
+The test context. It starts out as a `{ }` (empty object). Every method have access to it and can add or remove properties to it in order to share values between the test phases.
 
 ### **logger**
 A handy tool to print test outputs.

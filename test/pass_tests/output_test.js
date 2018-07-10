@@ -1,9 +1,5 @@
 module.exports = {
 
-  createContext() {
-    return { };
-  },
-
   async exec( env, ctx, logger ) {
     logger.error( 'Test is an error' );
     logger.warn( 'This is a warn' );

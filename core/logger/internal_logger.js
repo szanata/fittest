@@ -1,5 +1,4 @@
-const logTag = require( './logger_methods/log_tag' );
-const logSub = require( './logger_methods/log_sub' );
+const format = require( './logger_methods/format_framework_output' );
 const { blue, green, red } = require( './logger_methods/std_vars' );
 
 const clearCurrentLine = () => {
@@ -16,16 +15,10 @@ module.exports = () => {
   let spinLoop;
 
   return {
-    flow: m => log( logTag( { color: blue, label: 'Flow', message: m } ) ),
-    ok: m => log( logTag( { color: green, label: ' Ok ', message: m } ) ),
-    pass: m => log( logTag( { color: green, label: 'Pass', message: m } ) ),
-    fail: m => log( logTag( { color: red, label: 'Fail', message: m } ) ),
-    error: ( m, details ) => {
-      log( logTag( { color: red, label: 'Err!', message: m } ) );
-      if ( details ) {
-        log( logSub( { label: 'Details', text: details } ) );
-      }
-    },
+    flow: m => log( format( { color: blue, label: 'Flow', message: m } ) ),
+    ok: m => log( format( { color: green, label: ' Ok ', message: m } ) ),
+    pass: m => log( format( { color: green, label: 'Pass', message: m } ) ),
+    fail: m => log( format( { color: red, label: 'Fail', message: m } ) ),
     spinStart() {
       let counter = 0;
       spinLoop = setInterval( () => {

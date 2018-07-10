@@ -1,4 +1,4 @@
-const logger = require( './logger' ).createStdoutLogger();
+const logger = require( './logger' ).createInternalLogger();
 const { fork } = require( 'child_process' );
 const path = require( 'path' );
 const os = require( 'os' );
@@ -40,13 +40,12 @@ module.exports = ( paths, emitter, featuresEnv, opts ) => {
     setTimeout( () => { // small detail before trying to call the event
       if ( !processesIndex[processId] ) { return; }
       processesIndex[processId].send( { eventName, args } );
-    }, 1000);
+    }, 1000 );
   } );
 
   return new Promise( resolve => {
     logger.spinStart();
     setInterval( () => {
-
       if ( tasksCount === completed && running === 0 ) {
         logger.spinStop();
         const ellapsedTime = Date.now() - startTime;
@@ -54,7 +53,7 @@ module.exports = ( paths, emitter, featuresEnv, opts ) => {
       }
 
       // no more tests. Await
-      if ( paths.length === 0 ) { return }
+      if ( paths.length === 0 ) { return; }
 
       // if there is room, spin another process
       if ( running <= threshold ) {

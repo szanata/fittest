@@ -1,11 +1,7 @@
 module.exports = {
 
-  createContext() {
-    return { };
-  },
-
   async exec( env, ctx, logger ) {
-    logger.step( 'This test will take forever' );
+    logger.info( 'This test will take forever' );
     return new Promise( resolve => {
       setTimeout( () => {
         resolve();
@@ -13,7 +9,7 @@ module.exports = {
     } );
   },
 
-  rollback( env, ctx, logger ) {
+  after( env, ctx, logger ) {
     logger.ok( 'Rollback!' );
   }
 };

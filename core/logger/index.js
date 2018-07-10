@@ -1,7 +1,7 @@
-const createStdoutLogger = require( './stdout_logger' );
-const createBufferLogger = require( './buffer_logger' );
+const createInternalLogger = require( './internal_logger' );
+const createExposedLogger = require( './exposed_logger' );
 
 module.exports = {
-  createStdoutLogger,
-  createBufferLogger
+  createInternalLogger,
+  createExposedLogger
 };

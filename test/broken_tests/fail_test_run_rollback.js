@@ -1,8 +1,7 @@
 module.exports = {
-  
-  exec( env, ctx, logger ) {
-    logger.info( 'Test with invalid syntax' );
-    1 = 2;
+
+  exec( ) {
+    throw new Error('fail');
   },
 
   after( env, ctx, logger ) {

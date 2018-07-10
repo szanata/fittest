@@ -1,4 +1,4 @@
-const format = require( './logger_methods/log_test_task' );
+const format = require( './logger_methods/format_test_output' );
 const { blue, green, red, white, yellow } = require( './logger_methods/std_vars' );
 
 module.exports = () => {

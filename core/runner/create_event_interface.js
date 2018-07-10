@@ -4,10 +4,12 @@ const oneMinute = 60000;
 
 module.exports = () => {
   const emitter = new EventEmitter();
+  const emittedEvents = {};
 
   return {
-    emit( event, data ) {
+    emit( event, data = {} ) {
       emitter.emit( event, data );
+      emittedEvents[event] = data;
     },
 
     async on( event, threshold = oneMinute ) {
@@ -16,10 +18,15 @@ module.exports = () => {
           reject( new Error( `Timed out waiting for "${event}" event to happen.` ) );
         }, threshold );
 
-        emitter.once( event, ( ...args ) => {
-          clearTimeout( timeout );
-          resolve( ...args );
-        } );
+        if ( Object.keys( emittedEvents ).includes( event ) ) {
+          resolve( emittedEvents[event] );
+          delete emittedEvents[event];
+        } else {
+          emitter.once( event, ( ...args ) => {
+            clearTimeout( timeout );
+            resolve( ...args );
+          } );
+        }
       } );
     }
   };

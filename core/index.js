@@ -1,6 +1,6 @@
 const loadTestPaths = require( './load_test_paths' );
 const features = require( './features' );
-const logger = require( './logger' ).createStdoutLogger();
+const logger = require( './logger' ).createInternalLogger();
 const executeTests = require( './execute_tests' );
 const EventEmitter = require( 'events' );
 
