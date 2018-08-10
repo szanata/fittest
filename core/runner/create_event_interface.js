@@ -1,34 +1,36 @@
-const EventEmitter = require( 'events' );
-
 const oneMinute = 60000;
 
 module.exports = () => {
-  const emitter = new EventEmitter();
-  const emittedEvents = new Map();
+  const events = [];
+
+  const eventWasEmitted = name => events.filter( ev => ev[0] === name ).length > 0;
+
+  const consumerEvent = name => {
+    const i = events.findIndex( ev => ev[0] === name );
+    const data = events[i][1];
+    events.splice( i, 1 );
+    return data;
+  };
 
   return {
     emit( event, data = {} ) {
-      emitter.emit( event, data );
-      emittedEvents.set( event, data );
+      events.push( [ event, data ] );
     },
 
-    async on( event, threshold = oneMinute ) {
+    async on( eventName, threshold = oneMinute ) {
       return new Promise( ( resolve, reject ) => {
         const timeout = setTimeout( () => {
-          reject( new Error( `Timed out waiting for "${event}" event to happen.` ) );
+          clearInterval( eventDetection );
+          reject( new Error( `Timed out waiting for "${eventName}" event to happen.` ) );
         }, threshold );
 
-        // broadcast if was emitted before having the listner
-        if ( emittedEvents.has( event ) ) {
-          clearTimeout( timeout );
-          resolve( emittedEvents.get( event ) );
-          emittedEvents.delete( event );
-        } else {
-          emitter.once( event, ( ...args ) => {
+        const eventDetection = setInterval( () => {
+          if ( eventWasEmitted( eventName ) ) {
             clearTimeout( timeout );
-            resolve( ...args );
-          } );
-        }
+            clearInterval( eventDetection );
+            resolve( consumerEvent( eventName ) );
+          }
+        }, 100 );
       } );
     }
   };

@@ -62,4 +62,60 @@ describe( 'Create event interface test', () => {
       }, 1000 );
     } );
   } );
+
+  it( 'It should send the right data if one event is registered more than one time', () => {
+    const eventInterface = createEventInterface();
+
+    const data1 = 'random data';
+    const data2 = 'more random data';
+    const data3 = 'even more data';
+    let foo1Called = false;
+    let foo2Called = false;
+    let foo3Called = false;
+
+    eventInterface.on( 'foo' ).then( d => { foo1Called = true; assert( d === data1 ); } );
+    eventInterface.on( 'foo' ).then( d => { foo2Called = true; assert( d === data2 ); } );
+    eventInterface.on( 'foo' ).then( d => { foo3Called = true; assert( d === data3 ); } );
+
+    eventInterface.emit( 'foo', data1 );
+    eventInterface.emit( 'foo', data2 );
+    eventInterface.emit( 'foo', data3 );
+
+    return new Promise( resolve => {
+      setTimeout( () => {
+        assert( foo1Called );
+        assert( foo2Called );
+        assert( foo3Called );
+        resolve();
+      }, 1000 );
+    } );
+  } );
+
+  it( 'It should send the right data if events happened before beign registered, and were more than one', () => {
+    const eventInterface = createEventInterface();
+
+    const data1 = 'random data';
+    const data2 = 'more random data';
+    const data3 = 'even more data';
+    let foo1Called = false;
+    let foo2Called = false;
+    let foo3Called = false;
+
+    eventInterface.emit( 'foo', data1 );
+    eventInterface.emit( 'foo', data2 );
+    eventInterface.emit( 'foo', data3 );
+
+    eventInterface.on( 'foo' ).then( d => { foo1Called = true; assert( d === data1 ); } );
+    eventInterface.on( 'foo' ).then( d => { foo2Called = true; assert( d === data2 ); } );
+    eventInterface.on( 'foo' ).then( d => { foo3Called = true; assert( d === data3 ); } );
+
+    return new Promise( resolve => {
+      setTimeout( () => {
+        assert( foo1Called );
+        assert( foo2Called );
+        assert( foo3Called );
+        resolve();
+      }, 1000 );
+    } );
+  } );
 } );
