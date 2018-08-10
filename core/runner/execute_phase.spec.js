@@ -12,6 +12,19 @@ describe( 'Execute phase test', () => {
     return executePhase( fn, expectedArgs );
   } );
 
+  it( 'Should emit any error during the execution', async () => {
+    const fn = () => new Promise( ( resolve, reject ) => {
+      reject( new Error( 'Test Error' ) );
+    } );
+
+    try {
+      await executePhase( fn, [], 500 );
+      expect.fail();
+    } catch ( err ) {
+      expect( err.message ).to.eql( 'Test Error' );
+    }
+  } );
+
   it( 'Should throw error if the function didnt respond in the given timeout', async () => {
     const fn = () => new Promise( resolve => {
       setTimeout( () => {

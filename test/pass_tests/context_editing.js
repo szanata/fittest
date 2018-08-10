@@ -15,5 +15,6 @@ module.exports = {
     if ( ctx.foo !== 'bar' ) {
       throw new Error( 'context was not shared' );
     }
+    logger.ok( 'Everything went well' );
   }
 };

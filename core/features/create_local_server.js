@@ -17,14 +17,15 @@ const serializeRequest = req => ( {
 const makeHandle = emitter => ( req, res ) => {
   const body = [];
   req.on( 'data', chunk => body.push( chunk ) ).on( 'end', () => {
-    const processId = req.url.split( '/' )[1];
+    const procId = req.url.split( '/' )[1];
     const parsedBody = parseBody( body );
     const reqArg = serializeRequest( req );
     if ( req.method === 'POST' ) {
-      emitter.emit( 'message', { eventName: 'http-post', processId, args: { req: reqArg, body: parsedBody } } );
+      emitter.emit( `message_to:${procId}`, { eventName: 'http-post', args: {
+        req: reqArg, body: parsedBody } } );
     }
     if ( req.method === 'GET' ) {
-      emitter.emit( 'message', { eventName: 'http-get', processId, args: { req: reqArg } } );
+      emitter.emit( `message_to:${procId}`, { eventName: 'http-get', args: { req: reqArg } } );
     }
     res.end( );
   } );

@@ -7,6 +7,8 @@ module.exports = {
         resolve();
       }, 999999 );
     } );
+
+    throw new Error( 'This line should not be evaluated' );
   },
 
   after( env, ctx, logger ) {

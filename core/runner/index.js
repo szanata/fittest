@@ -1,4 +1,4 @@
-const logger = require( '../logger' ).createExposedLogger();
+const logger = require( '../logger' ).createUserLogger();
 const invokeTestPhases = require( './invoke_test_phases' );
 const createEventInterface = require( './create_event_interface' );
 const testNameResolver = require( './test_name_resolver' );
@@ -10,7 +10,7 @@ const name = testNameResolver( testPath );
 
 let test;
 try {
-  test = require( testPath );
+  test = require( testPath ); // eslint-disable-line global-require
 } catch ( err ) {
   logger.error( err.message, err.stack );
   process.send( { name, pass: false, logs: logger.output } );

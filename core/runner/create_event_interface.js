@@ -4,12 +4,12 @@ const oneMinute = 60000;
 
 module.exports = () => {
   const emitter = new EventEmitter();
-  const emittedEvents = {};
+  const emittedEvents = new Map();
 
   return {
     emit( event, data = {} ) {
       emitter.emit( event, data );
-      emittedEvents[event] = data;
+      emittedEvents.set( event, data );
     },
 
     async on( event, threshold = oneMinute ) {
@@ -18,9 +18,11 @@ module.exports = () => {
           reject( new Error( `Timed out waiting for "${event}" event to happen.` ) );
         }, threshold );
 
-        if ( Object.keys( emittedEvents ).includes( event ) ) {
-          resolve( emittedEvents[event] );
-          delete emittedEvents[event];
+        // broadcast if was emitted before having the listner
+        if ( emittedEvents.has( event ) ) {
+          clearTimeout( timeout );
+          resolve( emittedEvents.get( event ) );
+          emittedEvents.delete( event );
         } else {
           emitter.once( event, ( ...args ) => {
             clearTimeout( timeout );

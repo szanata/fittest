@@ -7,6 +7,5 @@ module.exports = {
     } catch ( err ) {
       logger.ok( 'Timed out' );
     }
-    logger.ok( 'Execution done' );
   }
 };

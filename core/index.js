@@ -22,10 +22,17 @@ module.exports = {
 
     try {
       const paths = loadTestPaths( execOpts.testsDir );
+      const testsSize = paths.length;
 
       const featuresEnv = await features.init( emitter );
 
+      logger.flow( `Running ${testsSize} tests` );
+
+      emitter.on( 'single_test_completed', i => logger.ok( `Completed (${i}/${testsSize})` ) );
+
+      logger.spinStart();
       const { results, ellapsedTime } = await executeTests( paths, emitter, featuresEnv, execOpts );
+      logger.spinStop();
 
       results.forEach( result => {
         if ( !execOpts.displaySuccessOutput && result.pass ) {
