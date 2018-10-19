@@ -36,7 +36,7 @@ project
     |-- index.js    
 ```
 
-This is were the tests are configurated.
+This is were the tests are configured, or the path for a single test.
 You must specific the tests directory.
 
 The content will be something in these lines:

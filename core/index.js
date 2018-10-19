@@ -28,7 +28,7 @@ module.exports = {
 
       logger.flow( `Running ${testsSize} tests` );
 
-      emitter.on( 'single_test_completed', i => logger.ok( `Completed (${i}/${testsSize})` ) );
+      emitter.on( 'single_test_completed', i => logger.done( `[${i}/${testsSize}], waiting to print results...` ) );
 
       logger.spinStart();
       const { results, ellapsedTime } = await executeTests( paths, emitter, featuresEnv, execOpts );
