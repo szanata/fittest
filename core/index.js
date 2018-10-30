@@ -4,11 +4,17 @@ const logger = require( './logger' ).createInternalLogger();
 const executeTests = require( './execute_tests' );
 const EventEmitter = require( 'events' );
 
-const hasAnyFalse = results => results.some( r => !r.pass );
+const getBrokenTestsCount = results => results.filter( r => !r.pass ).length;
 
 const defaults = {
   displaySuccessOutput: false,
-  timeoutTime: 300000
+  timeoutTime: 300000,
+  retries: 0
+};
+
+const getCallerDir = () => {
+  const stack = ( new Error() ).stack.split( '\n    at ' );
+  return stack[3].match( /\(([^)]+)\)/ )[1].replace( /\/[^/]+(?::\d)*$/ig, '' );
 };
 
 module.exports = {
@@ -21,7 +27,7 @@ module.exports = {
     const emitter = new EventEmitter();
 
     try {
-      const paths = loadTestPaths( execOpts.testsDir );
+      const paths = loadTestPaths( getCallerDir(), execOpts.path );
       const testsSize = paths.length;
 
       const featuresEnv = await features.init( emitter );
@@ -44,8 +50,9 @@ module.exports = {
 
       const timeInSeconds = ( ellapsedTime / 1000 ).toFixed( 2 );
 
-      if ( hasAnyFalse( results ) ) {
-        logger.fail( `Tests failed. Total run time ${timeInSeconds}s.` );
+      const brokenTestsCount = getBrokenTestsCount( results );
+      if ( brokenTestsCount > 0 ) {
+        logger.fail( `Tests failed: ${brokenTestsCount}. Total run time ${timeInSeconds}s.` );
         exitCode = 1;
       } else {
         logger.pass( `Tests passed. Total run time ${timeInSeconds}s.` );
@@ -60,4 +67,3 @@ module.exports = {
     process.exit( exitCode );
   }
 };
-

@@ -5,8 +5,6 @@ module.exports = () => {
   const buffer = [];
 
   const methodsMeta = [
-    [ 'flow', blue ], // @deprecated
-    [ 'step', white ], // @deprecated
     [ 'warn', yellow ],
     [ 'info', blue ],
     [ 'log', white ],

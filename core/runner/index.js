@@ -9,6 +9,7 @@ const { testPath, id, opts, featuresEnv: { serverUrl } } = JSON.parse( args );
 const name = testNameResolver( testPath );
 
 let test;
+
 try {
   test = require( testPath ); // eslint-disable-line global-require
 } catch ( err ) {
@@ -19,9 +20,18 @@ try {
 
 const event = createEventInterface( );
 
-const env = { serverUrl: `${serverUrl}/${id}`, asyncEvent: event.on };
+const env = { serverUrl: `${serverUrl}/${id}`, asyncEvent: event.once };
 
-process.on( 'message', m => event.emit( m.eventName, m.args ) );
+process.on( 'message', m => event.emit( m.name, m.args ) );
 
-invokeTestPhases( name, test, env, logger, opts )
-  .then( pass => process.send( { name, pass, logs: logger.output } ) );
+const invokeTest = async ( retriesCount = 0 ) => {
+  const pass = await invokeTestPhases( name, test, env, logger, opts );
+  if ( !pass && retriesCount < opts.retries ) {
+    logger.warn( 'Retrying test...' );
+    invokeTest( retriesCount + 1 );
+  } else {
+    process.send( { name, pass, logs: logger.output } );
+  }
+};
+
+invokeTest();

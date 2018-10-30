@@ -1,42 +1,30 @@
-const { expect } = require( 'chai' );
 const executePhase = require( './execute_phase' );
+const TimeoutError = require( './timeout_error' );
 
 describe( 'Execute phase test', () => {
-  it( 'Should execute given function with given args', () => {
-    const expectedArgs = [ 'abc', 123 ];
+  it( 'Should execute given function with given args', async () => {
+    const args = [ 'abc', 123 ];
+    const fn = jest.fn();
 
-    const fn = ( ...args ) => {
-      expect( args ).to.deep.eql( expectedArgs );
-    };
+    await executePhase( fn, args );
 
-    return executePhase( fn, expectedArgs );
+    expect( fn ).toHaveBeenCalledWith( ...args );
   } );
 
   it( 'Should emit any error during the execution', async () => {
-    const fn = () => new Promise( ( resolve, reject ) => {
-      reject( new Error( 'Test Error' ) );
-    } );
+    const msg = 'Test Error';
+    const fn = jest.fn();
+    fn.mockRejectedValue( new Error( msg ) );
 
-    try {
-      await executePhase( fn, [], 500 );
-      expect.fail();
-    } catch ( err ) {
-      expect( err.message ).to.eql( 'Test Error' );
-    }
+    await expect( executePhase( fn, [], 500 ) ).rejects.toThrow( new Error( msg ) );
   } );
 
-  it( 'Should throw error if the function didnt respond in the given timeout', async () => {
-    const fn = () => new Promise( resolve => {
-      setTimeout( () => {
-        resolve();
-      }, 1000 );
-    } );
+  it( 'Should throw error if the function didn\'t return on time', async () => {
+    const fn = jest.fn();
+    fn.mockImplementation( () => new Promise( resolve => {
+      setTimeout( () => resolve(), 1000 );
+    } ) );
 
-    try {
-      await executePhase( fn, [], 500 );
-      expect.fail();
-    } catch ( err ) {
-      expect( err.message ).to.eql( 'TIMEOUT' );
-    }
+    await expect( executePhase( fn, [], 500 ) ).rejects.toThrow( new TimeoutError() );
   } );
 } );

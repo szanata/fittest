@@ -1,121 +1,141 @@
-const { assert } = require( 'chai' );
 const createEventInterface = require( './create_event_interface' );
+const eventName = 'test-event';
 
-describe( 'Create event interface test', () => {
-  it( 'Should register a event and then be notified when it happens', () => {
-    const eventInterface = createEventInterface();
+describe( 'Event interface spec', () => {
 
-    return new Promise( resolve => {
-      eventInterface.on( 'foo' ).then( () => {
-        assert( true );
-        resolve();
+  describe( 'Should register a event and then be notified when it happens', () => {
+    it( 'When the event is triggered after the registration', async () => {
+      const eventInterface = createEventInterface();
+
+      const promise = new Promise( resolve =>
+        eventInterface.once( eventName ).then( resolve ) );
+
+      eventInterface.emit( eventName );
+
+      await promise;
+    } );
+
+    it( 'When the event is triggered before the registration', async () => {
+      const eventInterface = createEventInterface();
+
+      eventInterface.emit( eventName );
+
+      await eventInterface.once( eventName );
+    } );
+  } );
+
+  describe( 'Emitting the event just once for each time it was registered (.once)', () => {
+
+    it( 'When the events are triggered after the registration', async () => {
+      const eventInterface = createEventInterface();
+      const times = 2;
+      const calls = 5;
+
+      let callsCount = 0;
+      Array( times ).fill().forEach( () => eventInterface.once( eventName ).then( () => callsCount += 1 ) );
+
+      const promise = new Promise( resolve => {
+        setTimeout( () => {
+          if ( callsCount !== times ) {
+            throw new Error( `Event was called ${callsCount} and should had been ${times}` );
+          }
+          resolve();
+        }, 2000 );
       } );
 
-      eventInterface.emit( 'foo' );
+      Array( calls ).fill().forEach( () => eventInterface.emit( eventName ) );
+      await promise;
     } );
-  } );
 
-  it( 'If the event happens before the registration, it still have be triggered when registered', () => {
-    const eventInterface = createEventInterface();
+    it( 'When the events are triggered before the registration', async () => {
+      const eventInterface = createEventInterface();
+      const times = 2;
+      const calls = 5;
 
-    eventInterface.emit( 'foo' );
+      Array( calls ).fill().forEach( () => eventInterface.emit( eventName ) );
 
-    return eventInterface.on( 'foo' ).then( () => {
-      assert( true );
+      let callsCount = 0;
+      Array( times ).fill().forEach( () => eventInterface.once( eventName ).then( () => callsCount++ ) );
+
+      await new Promise( resolve => {
+        setTimeout( () => {
+          if ( callsCount !== times ) {
+            throw new Error( `Event was called ${callsCount} and should had been ${times}` );
+          }
+          resolve();
+        }, 2000 );
+      } );
     } );
-  } );
 
-  it( 'It should not emit events more than once', () => {
-    const eventInterface = createEventInterface();
+    it( 'When some events are triggered before, and some after the registration', async () => {
+      const eventInterface = createEventInterface();
+      const times = 3;
+      const calls1 = 2;
+      const calls2 = 5;
 
-    eventInterface.emit( 'foo' );
+      Array( calls1 ).fill().forEach( () => eventInterface.emit( eventName ) );
 
-    return new Promise( resolve => {
-      let calledCount = 0;
-      eventInterface.on( 'foo' ).then( () => {
-        calledCount += 1;
+      let callsCount = 0;
+      Array( times ).fill().forEach( () => eventInterface.once( eventName ).then( () => callsCount++ ) );
+
+      const promise = new Promise( resolve => {
+        setTimeout( () => {
+          if ( callsCount !== times ) {
+            throw new Error( `Event was called ${callsCount} and should had been ${times}` );
+          }
+          resolve();
+        }, 2000 );
       } );
 
-      setTimeout( () => {
-        assert( calledCount === 1 );
-        resolve();
-      }, 1000 );
+      Array( calls2 ).fill().forEach( () => eventInterface.emit( eventName ) );
 
-      eventInterface.emit( 'foo' );
-      eventInterface.emit( 'foo' );
+      await promise;
     } );
   } );
 
-  it( 'It should not emit events more than once even on past events', () => {
-    const eventInterface = createEventInterface();
+  describe( 'Sending event data to the callback', () => {
+    it( 'When the events are triggered after the registration', async () => {
+      const eventInterface = createEventInterface();
+      const size = 5;
+      const eventsData = Array( size ).fill().map( () => Math.ceil( Math.random() * 1000 ) );
 
-    eventInterface.emit( 'foo' );
-    eventInterface.emit( 'foo' );
+      const promise = new Promise( resolve => {
+        let callsCount = 0;
+        Array( size ).fill().forEach( ( _, i ) => {
+          eventInterface.once( eventName ).then( data => {
+            expect( data ).toBe( eventsData[i] );
+            callsCount++;
+            if ( callsCount === size ) {
+              resolve();
+            }
+          } );
+        } );
+      } );
 
-    let calledCount = 0;
-    eventInterface.on( 'foo' ).then( () => calledCount++ );
+      Array( size ).fill().forEach( ( _, i ) => eventInterface.emit( eventName, eventsData[i] ) );
 
-    return new Promise( resolve => {
-      setTimeout( () => {
-        assert( calledCount === 1 );
-        resolve();
-      }, 1000 );
+      await promise;
     } );
-  } );
 
-  it( 'It should send the right data if one event is registered more than one time', () => {
-    const eventInterface = createEventInterface();
+    it( 'When the events are triggered before the registration', async () => {
+      const eventInterface = createEventInterface();
+      const size = 5;
+      const eventsData = Array( size ).fill().map( () => Math.ceil( Math.random() * 1000 ) );
 
-    const data1 = 'random data';
-    const data2 = 'more random data';
-    const data3 = 'even more data';
-    let foo1Called = false;
-    let foo2Called = false;
-    let foo3Called = false;
+      Array( size ).fill().forEach( ( _, i ) => eventInterface.emit( eventName, eventsData[i] ) );
 
-    eventInterface.on( 'foo' ).then( d => { foo1Called = true; assert( d === data1 ); } );
-    eventInterface.on( 'foo' ).then( d => { foo2Called = true; assert( d === data2 ); } );
-    eventInterface.on( 'foo' ).then( d => { foo3Called = true; assert( d === data3 ); } );
-
-    eventInterface.emit( 'foo', data1 );
-    eventInterface.emit( 'foo', data2 );
-    eventInterface.emit( 'foo', data3 );
-
-    return new Promise( resolve => {
-      setTimeout( () => {
-        assert( foo1Called );
-        assert( foo2Called );
-        assert( foo3Called );
-        resolve();
-      }, 1000 );
-    } );
-  } );
-
-  it( 'It should send the right data if events happened before beign registered, and were more than one', () => {
-    const eventInterface = createEventInterface();
-
-    const data1 = 'random data';
-    const data2 = 'more random data';
-    const data3 = 'even more data';
-    let foo1Called = false;
-    let foo2Called = false;
-    let foo3Called = false;
-
-    eventInterface.emit( 'foo', data1 );
-    eventInterface.emit( 'foo', data2 );
-    eventInterface.emit( 'foo', data3 );
-
-    eventInterface.on( 'foo' ).then( d => { foo1Called = true; assert( d === data1 ); } );
-    eventInterface.on( 'foo' ).then( d => { foo2Called = true; assert( d === data2 ); } );
-    eventInterface.on( 'foo' ).then( d => { foo3Called = true; assert( d === data3 ); } );
-
-    return new Promise( resolve => {
-      setTimeout( () => {
-        assert( foo1Called );
-        assert( foo2Called );
-        assert( foo3Called );
-        resolve();
-      }, 1000 );
+      await new Promise( resolve => {
+        let callsCount = 0;
+        Array( size ).fill().forEach( ( _, i ) => {
+          eventInterface.once( eventName ).then( data => {
+            expect( data ).toBe( eventsData[i] );
+            callsCount++;
+            if ( callsCount === size ) {
+              resolve();
+            }
+          } );
+        } );
+      } );
     } );
   } );
 } );

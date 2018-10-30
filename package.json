@@ -1,23 +1,25 @@
 {
   "name": "fit-integration-tests",
-  "version": "1.6.0",
+  "version": "2.0.0",
   "description": "FIT (Fast Integration Tests) is a tool to run integration tests fast and in parallel.",
   "main": "./core/index.js",
   "dependencies": {
+    "caller-path": "^2.0.0",
     "ngrok": "^3.0.1"
   },
   "devDependencies": {
-    "chai": "^4.1.2",
+    "axios": "^0.18.0",
     "eslint": "^5.3.0",
-    "mocha": "^5.2.0",
-    "request-promise": "^4.2.2"
+    "jest": "^23.6.0"
   },
   "scripts": {
     "lint": "eslint './core' --fix && eslint './test' --fix",
-    "test:unit": "mocha './{,!(node_modules)/**}/*.spec.js'",
+    "test:unit": "jest --testPathIgnorePatterns=\"/node_modules|test/\" 2>&1",
     "test:pass": "node ./test/pass_tests.js",
+    "test:index_file": "node ./test/index_file_test",
+    "test:retry": "node ./test/retry_test",
     "test:broken": "node ./test/broken_tests",
-    "test": "npm run test:pass && npm run test:unit"
+    "test": "npm run test:pass && npm run test:index_file && npm run test:retry && npm run test:unit"
   },
   "repository": {
     "type": "git",

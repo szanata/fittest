@@ -5,10 +5,10 @@ FIT (Fast Integration Tests) is a tool to run integration tests fast and in para
 
 ## Main features
 
-- Can execute tests in parallel (one per CPU plus one)
+- Run tests in parallel according to the available CPUs
 - Each test runs on a new isolated node process
-- Test can receive webhooks on a public url created dynamically
-- The code can use a "await" to stop until a webhook be received
+- Test can receive webhooks on a public Url created dynamically
+- The code can use a "await" to stop until a webhook is received
 - Don't rely on *mocha* or any other test framework
 - Can be used with *chai* or others assertion tools
 - Fast, I mean... really fast
@@ -36,48 +36,50 @@ project
     |-- index.js    
 ```
 
-This is were the tests are configured, or the path for a single test.
-You must specific the tests directory.
+This is were the tests are configured, here can set the options and the tests folder.
 
-The content will be something in these lines:
 ```js
 const IntegrationTestFw = require( 'mw-integration-test-fw' );
-const { join } = require( 'path' );
 
-const testsDir = join( __dirname, './tests' );
-
-IntegrationTestFw.run( { testsDir } );
+IntegrationTestFw.run( { path: './tests' } );
 ```
 
-### 4. Create another folder inside the first one for the actual tests
+### 4. Create a folder for the actual tests
 
 ```
 project    
 |-- integration_tests
-    |-- index.js    
+    |-- index.js
     |-- tests
 ```
 
 ### 5. Create some tests
 
-Your tests must have this interface:
+Each of your tests must have a file with this interface:
 ```
 module.exports = {
 
-  before( env, ctx, logger ) { },
+  before( env, ctx, logger ) { 
 
-  exec( env, ctx, logger ) { },
+  },
 
-  after( env, ctx, logger ) { }
+  exec( env, ctx, logger ) { 
+
+  },
+
+  after( env, ctx, logger ) { 
+
+  }
 };
 ```
-**Test Phases:**
+
+## Test anatomy
 
 Every test have 3 distinct phases. The main phase `exec` is mandatory.
 
 If any phase fails, the tests are considered failing.
 
-Phases run in order and synchronously.
+Phases run in order and synchronously. Each phase is called by a method with the same name:
 
 | Name | Description |
 | ---- | ----------- |
@@ -85,57 +87,77 @@ Phases run in order and synchronously.
 | *exec* | This will have your test logic. If it fails, the next phase will run anyway. The tests failed. |
 | *after* | This will run after the `exec` method. If if fails, the tests fail. |
 
-**Tests folders:**
 
-Each test can be a folder with a index.js file inside, or a single .js file, so the tests can be something like this:
-
-```
-project    
-|-- integration_tests
-    |-- index.js    
-    |-- tests
-        |-- test_1
-            |-- index.js
-            |-- helper.js
-            |-- other_file.js
-        |-- test_2
-            |-- index.js
-        |-- test_3.js
-```
-
-## Test options
-
-Configurations send to `.run()` method.
-
-| Property | Type | Required | Default | Description |
-| -------- | ---- | -------- | ------- | ---------- |
-| testsDir | string | **yes** | *none* | The directory where the tests will be read from. |
-| timeoutTime | string | | 5 minutes | The time in milliseconds to wait before a test is killed due timeout. |
-| displaySuccessOutput | bool | | false | Print out logs from tests that passed. |
-
-## Test arguments
+### Arguments
 
 All test methods (`before`, `exec` and `rollback`) receive the same arguments **env**, **ctx**, **logger**:
+- [env](#env)
+- [ctx](#ctx)
+- [logger](#logger)
 
-### **env**
+#### env
+
 The test environment, this is a object containing any tools the framework provides.
 
 | Property | Type | Description |
 | -------- | ---- | ----------- |
-| serverUrl | string | The public accessible url so the test can receive webhooks via GET or POST. |
-| asyncEvent | function | A async func to block the test and await for a event to occur. See events below. If the event dont occur in one minute, it throws an error. |
+| serverUrl | string | The public accessible Url so the test can receive webhooks via GET or POST. |
+| asyncEvent | function | An async function to block the test and await for a event to occur. See events below. If the event don't happen in the time limit, it throws an error. |
 
-Async Events:
+##### .asyncEvent usage:
 
-| Event name | Params | Description |
-| ---------- | ------ | ----------- |
-| http-get | { req } | Invoked when serverUrl receives a GET. |
-| http-post | { req, body } | Invoked when serverUrl receives a POST, body is parsed to JSON if possible. |
+.asyncEvent is used to await to a specific async event from FIT to happen. It always returns a promise.
 
-### **ctx**
-The test context. It starts out as a `{ }` (empty object). Every method have access to it and can add or remove properties to it in order to share values between the test phases.
+Arguments:
 
-### **logger**
+| Name | Type | Description |
+| -------- | ---- | ----------- |
+| eventName | string | Event name to await. Possible: `http-get`, `http-post` |
+| threshold | number | Max time in milliseconds to await for this event to happen, throws an Error if the event doest no happen. Default: one minute |
+
+Events results:
+
+- `http-get`: resolves an object:
+``` js
+{
+  url: 'url', // witch Url received the event
+  headers: { }, // http headers received
+  qs: { } // deserialized query string object received on the url
+}
+```
+
+- `http-post`: resolves an object:
+``` js
+{
+  url: 'url', // witch Url received the event
+  headers: { }, // http headers received
+  qs: { }, // deserialized query string object received on the url
+  body: { } // deserialized post body
+}
+```
+
+Example:
+
+```js
+
+// do some request
+axios.get( env.serverUrl );
+
+
+// get the response
+const response = await env.asyncEvent( 'http-get' );
+```
+
+#### ctx
+
+The test context. Used to shared values between each test phase.
+
+Start value is an empty object (`{}`).
+
+Each phase can change it at will.
+
+#### logger
+
 A handy tool to print test outputs.
 
 *Important: As the tests run in parallel, any stdout like console.log will be mixed across all tests, use this logger instead.*
@@ -150,9 +172,55 @@ The logger have the following methods:
 | error | Use this to print an error | red |
 | info | Use this to print an oddity | blue |
 
-All logger methods can receive any number of arguments, which will be converted to string and concatened using a space.
+All logger methods can receive any number of arguments, which will be converted to string and concatenated using a space.
 
-### TODO
+### Tests path
 
-- Make features, like the webserver, optional
-- Add a email feature, to receive and assert emails
+FIT reads the tests recursively, looking for:
+- Any `index.js` file inside a folder that ends with `_test`;
+- Any file that ends with `.test.js`;
+- A single file, if the `path` option points to that file.
+
+Examples:
+
+Given that the `path` folder is `./tests`:
+```
+project    
+|-- integration_tests
+    |-- index.js    
+    |-- tests
+        |-- anything_test
+            |-- index.js // this is called!
+            |-- helper.js // not called
+            |-- other_file.js // not called
+        |-- no_so_much_test
+            |-- helper.js // not called
+        |-- another_folder
+            |-- index.js // not called
+        |-- common.js // not called
+        |-- common.test.js // this is called!
+```
+
+Given that the `path` folder is `./tests/foo.js`:
+```
+project    
+|-- integration_tests
+    |-- index.js    
+    |-- tests
+        |-- anything_test // not called
+            |-- index.js
+            |-- helper.js
+            |-- other_file.js
+        |-- foo.js // this is called!
+        |-- foo.test.js // not called
+```
+
+### Options
+
+Configurations send to `.run()` method.
+
+| Property | Type | Required | Default | Description |
+| -------- | ---- | -------- | ------- | ---------- |
+| testsDir | string | **yes** | *none* | The directory where the tests will be read from. |
+| timeoutTime | string | | 5 minutes | The time in milliseconds to wait before a test is killed due timeout. |
+| displaySuccessOutput | bool | | false | Print out logs from tests that passed. |

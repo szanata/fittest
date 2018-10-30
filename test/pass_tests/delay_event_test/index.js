@@ -1,4 +1,4 @@
-const rp = require( 'request-promise' );
+const axios = require( 'axios' );
 
 module.exports = {
 
@@ -6,7 +6,7 @@ module.exports = {
     logger.info( 'This test ensures that .asyncEvent is beign triggered even if the event already happened' );
 
     logger.log( 'Doing a get to the server url' );
-    rp( env.serverUrl );
+    axios.get( env.serverUrl );
 
     logger.log( 'Awaiting before registering an event' );
     await new Promise( resolve => setTimeout( () => resolve(), 1000 ) );

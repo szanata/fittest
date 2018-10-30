@@ -9,27 +9,43 @@ const parseBody = body => {
   }
 };
 
-const serializeRequest = req => ( {
-  url: req.url,
-  headers: req.headers
-} );
+const parseQuerystring = qs => decodeURIComponent( qs )
+  .split( '&' ).reduce( ( obj, kv ) => {
+    const [ key, value ] = kv.split( '=' );
+    obj[key] = value;
+    return obj;
+  }, {} );
+
+const createResponse = ( req, body ) => {
+  const [ url, qs ] = req.url.split( '?' );
+  const res = {
+    url,
+    qs: qs ? parseQuerystring( qs ) : {},
+    headers: req.headers
+  };
+  if ( body.length > 0 ) {
+    res.body = parseBody( body );
+  }
+  return res;
+};
+
+const getEvent = req => `message_to:${req.url.match( /\/(\d+)/ )[1]}`;
 
 const makeHandle = emitter => ( req, res ) => {
   const body = [];
   req.on( 'data', chunk => body.push( chunk ) ).on( 'end', () => {
-    const procId = req.url.split( '/' )[1];
-    const parsedBody = parseBody( body );
-    const reqArg = serializeRequest( req );
+    const event = getEvent( req );
+    const response = createResponse( req, body );
+
     if ( req.method === 'POST' ) {
-      emitter.emit( `message_to:${procId}`, { eventName: 'http-post', args: {
-        req: reqArg, body: parsedBody } } );
+      emitter.emit( event, { name: 'http-post', args: response } );
     }
+
     if ( req.method === 'GET' ) {
-      emitter.emit( `message_to:${procId}`, { eventName: 'http-get', args: { req: reqArg } } );
+      emitter.emit( event, { name: 'http-get', args: response } );
     }
     res.end( );
   } );
 };
 
 module.exports = ( port, emitter ) => http.createServer( makeHandle( emitter ) ).listen( port );
-
