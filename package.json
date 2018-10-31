@@ -23,13 +23,13 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+https://github.com/szanata/fit-integration-tests.git"
+    "url": "git+https://github.com/szanata/fittest.git"
   },
   "author": "Stéfano Zanata <contato@szanata.com>",
   "bugs": {
-    "url": "https://github.com/szanata/fit-integration-tests/issues"
+    "url": "https://github.com/szanata/fittest/issues"
   },
-  "homepage": "https://github.com/szanata/fit-integration-tests#readme",
+  "homepage": "https://github.com/szanata/fittest#readme",
   "directories": {
     "test": "test"
   },
