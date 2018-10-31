@@ -1,19 +1,19 @@
 module.exports = {
 
   before( env, ctx, logger ) {
-    ctx.foo = 'bar';
+    ctx.set( 'foo', 'bar' );
     logger.log( 'Setting up a ctx' );
   },
 
   exec( env, ctx, logger ) {
-    ctx.bar = 'foo';
+    ctx.set( 'foo', 'zum' );
     logger.log( 'Updating the ctx' );
   },
 
   after( env, ctx, logger ) {
     logger.log( 'Checking the ctx' );
-    if ( ctx.foo !== 'bar' ) {
-      throw new Error( 'context was not shared' );
+    if ( ctx.get( 'foo' ) !== 'zum' ) {
+      throw new Error( 'Context was not shared' );
     }
     logger.ok( 'Everything went well' );
   }

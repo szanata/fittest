@@ -14,7 +14,7 @@
   },
   "scripts": {
     "lint": "eslint './core' --fix && eslint './test' --fix",
-    "test:unit": "jest --testPathIgnorePatterns=\"/node_modules|test/\" 2>&1",
+    "test:unit": "jest --testPathIgnorePatterns=\"/node_modules|\/test/\" 2>&1",
     "test:pass": "node ./test/pass_tests.js",
     "test:index_file": "node ./test/index_file_test",
     "test:retry": "node ./test/retry_test",

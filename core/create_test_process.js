@@ -10,7 +10,7 @@ module.exports = ( testPath, emitter, featuresEnv, opts ) => {
   const proc = fork( runnerPath, parameters, options );
 
   const messageHandler = ( { name, args } ) => {
-    setTimeout( () => proc.send( { name, args } ), 1000 );
+    setTimeout( () => proc.send( { name, args } ), 3000 );
   };
 
   emitter.on( listenEvent, messageHandler );

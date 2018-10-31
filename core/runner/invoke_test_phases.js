@@ -4,9 +4,11 @@ const executePhase = require( './execute_phase' );
 const methods = [ 'before', 'exec', 'after' ];
 
 module.exports = async ( name, test, env, logger, cfg ) => {
-  const ctx = {};
+  const ctx = new Map();
   const args = [ env, ctx, logger ];
   const timeoutTime = parseInt( cfg.timeoutTime, 10 ) || fiveMinutes;
+
+  Object.freeze( ctx );
 
   let success = true;
 

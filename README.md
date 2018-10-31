@@ -1,7 +1,7 @@
 # fittest (Fast InTegration TEST)
 [![Build Status](https://travis-ci.org/szanata/fit-integration-tests.svg?branch=master)](https://travis-ci.org/szanata/fit-integration-tests)
 
-FIT (Fast Integration Tests) is a tool to create ingetration tests.
+fittest (Fast InTegration TESTs) is a tool to create ingetration tests.
 
 ## Main features
 
@@ -18,22 +18,14 @@ FIT (Fast Integration Tests) is a tool to create ingetration tests.
 ### 1. Download and install the project
 
 ```
-npm install fit-integration-tests
+npm install fittest
 ```
 
-### 2. Create a folder for your integration tests
-
-```
-project    
-|-- integration_tests
-```
-
-### 3. Inside the folder, create a index.js, to start the tests
+### 2. Create a startup js file on your project to run the tests
 
 ```
 project    
-|-- integration_tests
-    |-- index.js    
+|-- run_tests.js    
 ```
 
 This is were the tests are configured, here can set the options and the tests folder.
@@ -44,16 +36,15 @@ const IntegrationTestFw = require( 'mw-integration-test-fw' );
 IntegrationTestFw.run( { path: './tests' } );
 ```
 
-### 4. Create a folder for the actual tests
+### 3. Create a folder for the actual tests
 
 ```
 project    
-|-- integration_tests
-    |-- index.js
-    |-- tests
+|-- run_tests.js
+|-- tests
 ```
 
-### 5. Create some tests
+### 4. Create some tests
 
 Each of your tests must have a file with this interface:
 ```
@@ -152,7 +143,7 @@ const response = await env.asyncEvent( 'http-get' );
 
 The test context. Used to shared values between each test phase.
 
-Start value is an empty object (`{}`).
+It's a js Map object, and cannot be overwritten.
 
 Each phase can change it at will.
 
@@ -186,33 +177,31 @@ Examples:
 Given that the `path` folder is `./tests`:
 ```
 project    
-|-- integration_tests
-    |-- index.js    
-    |-- tests
-        |-- anything_test
-            |-- index.js // this is called!
-            |-- helper.js // not called
-            |-- other_file.js // not called
-        |-- no_so_much_test
-            |-- helper.js // not called
-        |-- another_folder
-            |-- index.js // not called
-        |-- common.js // not called
-        |-- common.test.js // this is called!
+|-- run_tests.js
+|-- tests
+    |-- anything_test
+        |-- index.js // this is called!
+        |-- helper.js // not called
+        |-- other_file.js // not called
+    |-- no_so_much_test
+        |-- helper.js // not called
+    |-- another_folder
+        |-- index.js // not called
+    |-- common.js // not called
+    |-- common.test.js // this is called!
 ```
 
 Given that the `path` folder is `./tests/foo.js`:
 ```
 project    
-|-- integration_tests
-    |-- index.js    
-    |-- tests
-        |-- anything_test // not called
-            |-- index.js
-            |-- helper.js
-            |-- other_file.js
-        |-- foo.js // this is called!
-        |-- foo.test.js // not called
+|-- run_tests.js
+|-- tests
+    |-- anything_test // not called
+        |-- index.js
+        |-- helper.js
+        |-- other_file.js
+    |-- foo.js // this is called!
+    |-- foo.test.js // not called
 ```
 
 ### Options
@@ -224,3 +213,4 @@ Configurations send to `.run()` method.
 | testsDir | string | **yes** | *none* | The directory where the tests will be read from. |
 | timeoutTime | string | | 5 minutes | The time in milliseconds to wait before a test is killed due timeout. |
 | displaySuccessOutput | bool | | false | Print out logs from tests that passed. |
+| retries | number | | 0 | Number of retries to perform on each test that fails. |
