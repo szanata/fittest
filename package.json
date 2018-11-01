@@ -1,6 +1,6 @@
 {
   "name": "fittest",
-  "version": "4.0.0",
+  "version": "4.0.1",
   "description": "fittest (Fast Integration Test) is a tool to create integration tests",
   "main": "./core/index.js",
   "dependencies": {
