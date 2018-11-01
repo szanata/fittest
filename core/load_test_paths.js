@@ -1,4 +1,4 @@
-const { readdirSync, lstatSync, existsSync } = require( 'fs' );
+const { readdirSync, lstatSync } = require( 'fs' );
 const { join } = require( 'path' );
 
 const readFiles = src =>
@@ -7,14 +7,10 @@ const readFiles = src =>
     const stat = lstatSync( path );
 
     if ( stat.isDirectory() ) {
-      if ( fName.endsWith( '_test' ) && existsSync( join( path, 'index.js' ) ) ) {
-        return arr.concat( join( path, 'index.js' ) );
-      }
-
       return arr.concat( readFiles( path ) ) ;
     }
 
-    if ( fName.endsWith( '.test.js' ) ) {
+    if ( path.endsWith( '_test/index.js' ) || path.endsWith( '.test.js' ) ) {
       return arr.concat( path );
     }
 

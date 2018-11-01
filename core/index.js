@@ -1,69 +1,91 @@
 const loadTestPaths = require( './load_test_paths' );
-const features = require( './features' );
-const logger = require( './logger' ).createInternalLogger();
+const { init: initFeatures } = require( './features' );
+const Logger = require( './logger' ).createInternalLogger();
 const executeTests = require( './execute_tests' );
+const executeBlock = require( './execute_block' );
 const EventEmitter = require( 'events' );
+const defaults = require( './defaults' );
+const msToS = require( './time/ms_to_s' );
+const getStackFrameDir = require( './get_stack_frame_dir' );
+
+const quit = status => process.exit( status );
 
 const getBrokenTestsCount = results => results.filter( r => !r.pass ).length;
 
-const defaults = {
-  displaySuccessOutput: false,
-  timeoutTime: 300000,
-  retries: 0
+const printResults = ( results, displaySuccessOutput ) =>
+  results
+    .filter( r => displaySuccessOutput || !r.pass )
+    .forEach( r => {
+      Logger.flow( `Output for: "${r.name}"` );
+      r.logs.forEach( line => console.log( line ) );
+    } );
+
+const runBlock = async ( blockName, emitter, opts ) => {
+  if ( !opts[blockName] ) { return null; }
+
+  const [ path ] = loadTestPaths( opts.callerDir, opts[blockName] );
+  if ( !path ) { return null; }
+
+  Logger.flow( `Executing "${blockName}" block` );
+  const result = await executeBlock( path, emitter, opts );
+
+  if ( !result.pass ) {
+    printResults( [ result ], opts );
+    process.exit( 1 );
+  } else {
+    // make the callback from the beforeAll available to each test
+    opts.context = result.context;
+  }
+
+  return result;
 };
 
-const getCallerDir = () => {
-  const stack = ( new Error() ).stack.split( '\n    at ' );
-  return stack[3].match( /\(([^)]+)\)/ )[1].replace( /\/[^/]+(?::\d)*$/ig, '' );
-};
+const getTotalTime = results => msToS( results.filter( v => !!v ).reduce( ( v, p ) => p.elapsedTime + v, 0 ) );
 
 module.exports = {
 
-  async run( opts ) {
-    const execOpts = Object.assign( { }, defaults, opts );
+  async run( params ) {
 
-    let exitCode = 0;
-
+    const opts = Object.assign( { }, defaults, params );
     const emitter = new EventEmitter();
+    const blocksResults = [];
+    opts.context = [];
 
     try {
-      const paths = loadTestPaths( getCallerDir(), execOpts.path );
+      opts.callerDir = getStackFrameDir( 3 );
+      const paths = loadTestPaths( opts.callerDir, opts.path );
       const testsSize = paths.length;
 
-      const featuresEnv = await features.init( emitter );
+      opts.features = await initFeatures( emitter );
 
-      logger.flow( `Running ${testsSize} tests` );
+      Logger.flow( `Running ${testsSize} tests, relative path: "${opts.callerDir}"` );
 
-      emitter.on( 'single_test_completed', i => logger.done( `[${i}/${testsSize}], waiting to print results...` ) );
+      blocksResults.push( await runBlock( 'beforeAll', emitter, opts ) );
 
-      logger.spinStart();
-      const { results, ellapsedTime } = await executeTests( paths, emitter, featuresEnv, execOpts );
-      logger.spinStop();
+      emitter.on( 'single_test_completed', i => Logger.done( `[${i}/${testsSize}], awaiting other tasks...` ) );
 
-      results.forEach( result => {
-        if ( !execOpts.displaySuccessOutput && result.pass ) {
-          return;
-        }
-        logger.flow( `Test result for ${result.name}` );
-        result.logs.forEach( line => console.log( line ) );
-      } );
+      Logger.spinStart();
+      const results = await executeTests( paths, emitter, opts );
+      Logger.spinStop();
 
-      const timeInSeconds = ( ellapsedTime / 1000 ).toFixed( 2 );
+      printResults( results, opts.displaySuccessOutput );
+
+      blocksResults.push( await runBlock( 'afterAll', emitter, opts ) );
 
       const brokenTestsCount = getBrokenTestsCount( results );
+      const totalTime = getTotalTime( results.concat( blocksResults ) );
+
       if ( brokenTestsCount > 0 ) {
-        logger.fail( `Tests failed: ${brokenTestsCount}. Total run time ${timeInSeconds}s.` );
-        exitCode = 1;
+        Logger.fail( `Tests failed: ${brokenTestsCount}. Total run time ${totalTime}s.` );
+        quit( 1 );
       } else {
-        logger.pass( `Tests passed. Total run time ${timeInSeconds}s.` );
-        exitCode = 0;
+        Logger.pass( `Tests passed. Total run time ${totalTime}s.` );
+        quit( 0 );
       }
     } catch ( err ) {
-      logger.fail( 'Startup error' );
+      Logger.fail( 'Startup error' );
       console.error( err );
-      exitCode = 1;
+      quit( 1 );
     }
-
-    process.exit( exitCode );
   }
 };

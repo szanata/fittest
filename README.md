@@ -143,7 +143,7 @@ const response = await env.asyncEvent( 'http-get' );
 
 The test context. Used to shared values between each test phase.
 
-It's a js Map object, and cannot be overwritten.
+It's a js Map object, but unfortunately there are some restrictions using it: do not set any keys or values different than Number, String, Boolean, Arrays or Literal Objects. This limitations is due the way this object will be serialized to be shared across the test phases or between the "beforeAll" and the tests and the "afterAll" block.
 
 Each phase can change it at will.
 
@@ -214,3 +214,18 @@ Configurations send to `.run()` method.
 | timeoutTime | string | | 5 minutes | The time in milliseconds to wait before a test is killed due timeout. |
 | displaySuccessOutput | bool | | false | Print out logs from tests that passed. |
 | retries | number | | 0 | Number of retries to perform on each test that fails. |
+| beforeAll | string | | *none* | Path to a script file to run before the tests |
+| afterAll | string | | *none* | Path to a script file to run after the tests |
+
+### Blocks
+
+Blocks are script files that will run before or after the tests. They must be files that exports a function.
+
+This functions have the same signature as any test phase, receiving the same arguments: *env*, *ctx*, *logger*.
+
+Example of beforeAll block:
+```js
+module.exports = ( env, ctx, logger ) => {
+  // run something you need before all the tests
+}
+```

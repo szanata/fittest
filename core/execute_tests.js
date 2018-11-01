@@ -1,19 +1,17 @@
-const createTestProcess = require( './create_test_process' );
+const invokeProcess = require( './invoke_process' );
 const os = require( 'os' );
 const threshold = os.cpus().length + 1;
 
-module.exports = ( paths, emitter, featuresEnv, opts ) => new Promise( resolve => {
+module.exports = ( paths, emitter, opts ) => new Promise( resolve => {
   const results = [];
-  const startTime = Date.now();
   const tasksCount = paths.length;
   const testsPaths = paths.slice();
-  const getEllapsedTime = () => Date.now() - startTime;
   const Counters = { running: 0, done: 0 };
 
   const testsLoop = setInterval( async () => {
     if ( tasksCount === Counters.done && Counters.running === 0 ) {
       clearInterval( testsLoop );
-      resolve( { results, ellapsedTime: getEllapsedTime() } );
+      resolve( results );
     }
 
     // no more tests. Await
@@ -22,7 +20,7 @@ module.exports = ( paths, emitter, featuresEnv, opts ) => new Promise( resolve =
     // if there is room, spin another process
     if ( Counters.running <= threshold ) {
       Counters.running++;
-      const result = await createTestProcess( testsPaths.pop(), emitter, featuresEnv, opts );
+      const result = await invokeProcess( 'test', testsPaths.pop(), emitter, opts );
       Counters.running--;
       Counters.done++;
       emitter.emit( 'single_test_completed', Counters.done );
