@@ -10,7 +10,13 @@ module.exports = ( type, value, emitter, opts ) => {
   const proc = fork( runnerPath, parameters, options );
 
   const messageHandler = ( { name, args } ) => {
-    setTimeout( () => proc.send( { name, args } ), 3000 );
+    setTimeout( () => {
+      try {
+        proc.send( { name, args } );
+      } catch ( err ) {
+        // swallow this error. This happens when the proc already ended but there is still a message to be sent.
+      }
+    }, 3000 );
   };
 
   emitter.on( listenEvent, messageHandler );

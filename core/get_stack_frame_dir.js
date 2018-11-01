@@ -1,4 +1,4 @@
-module.exports = deepth => 
+module.exports = deepth =>
   new Error()
     .stack
     .split( '\n    at ' )[deepth]
