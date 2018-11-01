@@ -1,7 +1,7 @@
 # fittest (Fast InTegration TEST)
 [![Build Status](https://travis-ci.org/szanata/fit-integration-tests.svg?branch=master)](https://travis-ci.org/szanata/fit-integration-tests)
 
-fittest (Fast InTegration TESTs) is a tool to create ingetration tests.
+**fittest** (Fast InTegration TESTs) is a tool to create ingetration tests.
 
 ## Main features
 
@@ -28,7 +28,7 @@ project
 |-- run_tests.js    
 ```
 
-This is were the tests are configured, here can set the options and the tests folder.
+This is a start point, were the options are set and the whole thing starts.
 
 ```js
 const IntegrationTestFw = require( 'mw-integration-test-fw' );
@@ -82,24 +82,24 @@ Phases run in order and synchronously. Each phase is called by a method with the
 ### Arguments
 
 All test methods (`before`, `exec` and `rollback`) receive the same arguments **env**, **ctx**, **logger**:
-- [env](#env)
-- [ctx](#ctx)
-- [logger](#logger)
+- [env](#arg-env)
+- [ctx](#arg-ctx)
+- [logger](#arg-logger)
 
-#### env
+#### Arg: env
 
 The test environment, this is a object containing any tools the framework provides.
 
 | Property | Type | Description |
 | -------- | ---- | ----------- |
 | serverUrl | string | The public accessible Url so the test can receive webhooks via GET or POST. |
-| asyncEvent | function | An async function to block the test and await for a event to occur. See events below. If the event don't happen in the time limit, it throws an error. |
+| asyncEvent | function | An async function to await for a event to occur. See below. If the event don't happen in the time limit, it throws an error. |
 
 ##### .asyncEvent usage:
 
-.asyncEvent is used to await to a specific async event from FIT to happen. It always returns a promise.
+.asyncEvent is used to await to a specific async event from *fittest* to happen. It always returns a promise.
 
-Arguments:
+.asyncEvent arguments:
 
 | Name | Type | Description |
 | -------- | ---- | ----------- |
@@ -139,7 +139,7 @@ axios.get( env.serverUrl );
 const response = await env.asyncEvent( 'http-get' );
 ```
 
-#### ctx
+#### Arg: ctx
 
 The test context. Used to shared values between each test phase.
 
@@ -147,7 +147,7 @@ It's a js Map object, but unfortunately there are some restrictions using it: do
 
 Each phase can change it at will.
 
-#### logger
+#### Arg: logger
 
 A handy tool to print test outputs.
 
