@@ -34,7 +34,7 @@ let exec = () => {};
 
 if ( type === 'test' ) {
   exec = async ( retriesCount = 0 ) => {
-    const pass = await invokeTestPhases( name, content, env, ctx, logger, opts );
+    const pass = await invokeTestPhases( name, content, env, new Map( ctx ), logger, opts );
     if ( !pass && retriesCount < opts.retries ) {
       logger.warn( 'Retrying test...' );
       return exec( retriesCount + 1 );
