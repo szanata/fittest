@@ -1,4 +1,3 @@
-const loadTestPaths = require( './load_test_paths' );
 const { init: initFeatures } = require( './features' );
 const Logger = require( './logger' ).createInternalLogger();
 const executeTests = require( './execute_tests' );
@@ -7,6 +6,7 @@ const EventEmitter = require( 'events' );
 const defaults = require( './defaults' );
 const msToS = require( './utils/time/ms_to_s' );
 const getStackFrameDir = require( './utils/stack/get_stack_frame_dir' );
+const getTestsPaths = require( './utils/files/get_tests_paths' );
 
 const quit = status => process.exit( status );
 
@@ -23,7 +23,7 @@ const printResults = ( results, displaySuccessOutput ) =>
 const runBlock = async ( blockName, emitter, opts ) => {
   if ( !opts[blockName] ) { return null; }
 
-  const [ path ] = loadTestPaths( opts.callerDir, opts[blockName] );
+  const [ path ] = getTestsPaths( opts.callerDir, opts[blockName] );
   if ( !path ) { return null; }
 
   Logger.flow( `Executing "${blockName}" block` );
@@ -53,7 +53,7 @@ module.exports = {
 
     try {
       opts.callerDir = getStackFrameDir( 3 );
-      const paths = loadTestPaths( opts.callerDir, opts.path );
+      const paths = getTestsPaths( opts.callerDir, opts.path );
       const testsSize = paths.length;
 
       opts.features = await initFeatures( emitter );
