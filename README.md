@@ -1,5 +1,5 @@
 # fittest (Fast InTegration TEST)
-[![Build Status](https://travis-ci.org/szanata/fit-integration-tests.svg?branch=master)](https://travis-ci.org/szanata/fit-integration-tests)
+[![Build Status](https://travis-ci.org/szanata/fittest.svg?branch=master)](https://travis-ci.org/szanata/fit-integration-tests)
 
 **fittest** (Fast InTegration TESTs) is a tool to create ingetration tests.
 
