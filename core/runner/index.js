@@ -1,21 +1,21 @@
 const logger = require( '../logger' ).createUserLogger();
 const invokeTestPhases = require( './invoke_test_phases' );
-const createEventInterface = require( './create_event_interface' );
+const CustomEventEmitter = require( '../utils/event/custom_event_emitter' );
 const testNameResolver = require( './test_name_resolver' );
 const createEnvironment = require( './create_environment' );
 const ExecResult = require( '../models/exec_result' );
-const Timer = require( '../time/timer' );
+const Timer = require( '../utils/time/timer' );
 const serializeMap = require( '../object/serialize_map' );
 const deserializeMap = require( '../object/deserialize_map' );
 
 const [ , , args ] = process.argv;
 const { type, value, id, opts } = JSON.parse( args );
 
-const event = createEventInterface( );
-const env = createEnvironment( id, opts, event );
+const emitter = CustomEventEmitter.init( );
+const env = createEnvironment( id, opts, emitter );
 const timer = Timer.start();
 
-process.on( 'message', m => event.emit( m.name, m.args ) );
+process.on( 'message', m => emitter.emit( m.name, m.args ) );
 
 const ctx = deserializeMap( opts.context );
 const name = testNameResolver( value );

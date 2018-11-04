@@ -14,5 +14,5 @@ module.exports = {
   bgBlue: '\x1b[44m',
   bgRed: '\x1b[41m',
   spc: ' ',
-  setSpace: x => new Array( x ).fill( ' ' ).join( '' )
+  setSpace: x => Array( x ).fill( ' ' ).join( '' )
 };

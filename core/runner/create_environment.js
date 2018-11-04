@@ -1,4 +1,4 @@
-module.exports = ( id, opts, event ) => ( {
+module.exports = ( id, opts, emitter ) => ( {
   serverUrl: `${opts.features.serverUrl}/${id}`,
-  asyncEvent: event.once
+  asyncEvent: emitter.once
 } );

@@ -27,7 +27,7 @@ module.exports = () => {
           counter = 0;
         }
         clearCurrentLine();
-        process.stdout.write( `Processing tests: ${new Array( counter ).fill( '#' ).join( '' )}` );
+        process.stdout.write( `Processing tests: ${Array( counter ).fill( '#' ).join( '' )}` );
       }, 100 );
     },
     spinStop() {

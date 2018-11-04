@@ -5,8 +5,8 @@ const executeTests = require( './execute_tests' );
 const executeBlock = require( './execute_block' );
 const EventEmitter = require( 'events' );
 const defaults = require( './defaults' );
-const msToS = require( './time/ms_to_s' );
-const getStackFrameDir = require( './get_stack_frame_dir' );
+const msToS = require( './utils/time/ms_to_s' );
+const getStackFrameDir = require( './utils/stack/get_stack_frame_dir' );
 
 const quit = status => process.exit( status );
 

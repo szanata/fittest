@@ -1,8 +1,9 @@
 const { fork } = require( 'child_process' );
 const path = require( 'path' );
+const genId = require( './utils/data/gen_id' );
 
 module.exports = ( type, value, emitter, opts ) => {
-  const id = String( Math.ceil( Math.random() * 1000 ) );
+  const id = genId();
   const runnerPath = path.join( __dirname, './runner/index.js' );
   const parameters = [ JSON.stringify( { type, value, id, opts } ) ];
   const options = { stdio: [ 'pipe', 'pipe', 'pipe', 'ipc' ] };
