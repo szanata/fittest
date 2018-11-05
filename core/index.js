@@ -10,11 +10,11 @@ const getTestsPaths = require( './utils/files/get_tests_paths' );
 
 const quit = status => process.exit( status );
 
-const getBrokenTestsCount = results => results.filter( r => !r.pass ).length;
+const getBrokenTestsCount = results => results.filter( r => !r.state ).length;
 
 const printResults = ( results, displaySuccessOutput ) =>
   results
-    .filter( r => displaySuccessOutput || !r.pass )
+    .filter( r => displaySuccessOutput || !r.state )
     .forEach( r => {
       Logger.flow( `Output for: "${r.name}"` );
       r.logs.forEach( line => console.log( line ) );
@@ -29,7 +29,7 @@ const runBlock = async ( blockName, emitter, opts ) => {
   Logger.flow( `Executing "${blockName}" block` );
   const result = await executeBlock( path, emitter, opts );
 
-  if ( !result.pass ) {
+  if ( !result.state ) {
     printResults( [ result ], opts );
     process.exit( 1 );
   } else {

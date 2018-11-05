@@ -2,13 +2,12 @@
   "extends": "eslint:recommended",
   "root": true,
   "parserOptions": {
-    "ecmaVersion": 2017,
+    "ecmaVersion": 2018,
     "sourceType": "module"
   },
   "env": {
     "es6": true,
     "node": true,
-    "mocha": true,
     "jest": true
   },
   "rules": {
@@ -43,7 +42,7 @@
       "error",
       "ForInStatement",
       "LabeledStatement",
-      "WithStatement",
+      "WithStatement"
     ],
     "no-template-curly-in-string": 0,
     "no-trailing-spaces": [ "error" ],

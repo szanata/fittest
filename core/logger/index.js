@@ -1,7 +1,7 @@
 const createInternalLogger = require( './internal_logger' );
-const createUserLogger = require( './user_logger' );
+const overwriteConsole = require( './overwrite_console' );
 
 module.exports = {
   createInternalLogger,
-  createUserLogger
+  overwriteConsole
 };
