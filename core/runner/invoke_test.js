@@ -1,7 +1,7 @@
 const Fittest = require( '../models/fittest' );
 const TestState = require( '../models/test_state' );
 const TestInterface = require( '../models/test_public_interface' );
-const FnExecResult = require( '../models/fn_exec_result' );
+const TestBitResult = require( '../models/test_bit_result' );
 
 const TimeoutError = require( '../models/timeout_error' );
 const Timer = require( '../utils/time/timer' );
@@ -9,7 +9,7 @@ const Timer = require( '../utils/time/timer' );
 const fiveMinutes = 300000;
 const execute = async ( fn, ...args ) => {
   const t = Timer.init();
-  const result = FnExecResult.init();
+  const result = TestBitResult.init();
   try {
     await fn( ...args );
   } catch ( err ) {

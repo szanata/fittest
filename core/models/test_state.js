@@ -1,13 +1,14 @@
 const genId = require( '../utils/data/gen_id' );
 const Hook = require( './test_hook' );
 const Step = require( './test_step' );
+const TestBitResult = require( './test_bit_result' );
 const { DirectHooks, ConditionalHooks }  = require( './types' );
 
 module.exports = {
   init( ) {
     const steps = [];
     const hooks = [];
-    let name = name;
+    let name;
 
     return {
       get beforeHooks() {
@@ -25,13 +26,14 @@ module.exports = {
       get undoSteps( ) {
         return steps.reverse().filter( s => s.result.ok );
       },
-      ok( ) {
+      get ok( ) {
         const hooksOk = hooks.every( h => h.ok );
         const stepsOk = steps.every( s => s.ok );
         return hooksOk && stepsOk;
       },
-      serialize( ) {
-
+      get et( ) {
+        return this.hooks.reduce( ( sum, h ) => h.result.et + sum, 0 ) +
+          this.steps.reduce( ( sum, s ) => s.result.et + sum + s.hooksEt, 0 );
       },
       addStep( name, fn ) {
         const hash = genId();
@@ -49,6 +51,17 @@ module.exports = {
         } else if ( [ DirectHooks.before, DirectHooks.after ].includes( type ) ) {
           hooks.push( Hook.init( type, fn ) );
         }
+      },
+      serialize( ) {
+        return {
+          name,
+          steps: this.steps.map( s => s.serialize() ),
+          hooks: this.hooks.map( h => h.serialize() ),
+          result: {
+            ok: this.ok,
+            et: this.et
+          }
+        };
       }
     };
   }

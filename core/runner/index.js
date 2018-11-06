@@ -12,10 +12,10 @@ const { type, filePath, id, opts } = JSON.parse( args );
 
 const emitter = CustomEventEmitter.init( );
 const env = createEnvironment( id, opts, emitter );
-
-process.on( 'message', m => emitter.emit( m.name, m.args ) );
-
 const ctx = deserializeMap( opts.context );
+
+// register one way message receiver from main process
+process.on( 'message', m => emitter.emit( m.name, m.args ) );
 
 let exec = () => {};
 
@@ -31,16 +31,7 @@ if ( type === 'test' ) {
   };
 
 } else if ( type === 'block' ) {
-  // exec = async () => {
-  //   let state = true;
-  //   try {
-  //     await content.call( null, env, ctx, logger );
-  //   } catch ( err ) {
-  //     state = false;
-  //     logger.error( err.message );
-  //   }
-  //   return { state, logs: logger.output, elapsedTime: timer.stop(), context: serializeMap( ctx ) };
-  // };
+  // exec = () => invokeBlock( filePath, ctx, env, opts.timeoutTime );
 }
 
 exec().then( testState => {
