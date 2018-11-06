@@ -1,8 +1,7 @@
 const genId = require( '../utils/data/gen_id' );
 const Hook = require( './test_hook' );
 const Step = require( './test_step' );
-const TestBitResult = require( './test_bit_result' );
-const { DirectHooks, ConditionalHooks }  = require( './types' );
+const { DirectHooks, ConditionalHooks } = require( './types' );
 
 module.exports = {
   init( ) {

@@ -1,4 +1,4 @@
-const TestBitResult =  require( './test_bit_result' );
+const TestBitResult = require( './test_bit_result' );
 
 describe( 'Test Bit Result Spec', () => {
   it( 'A new empty TestBitResult should be ok', () => {

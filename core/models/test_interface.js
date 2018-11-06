@@ -5,7 +5,7 @@ module.exports = {
   init( env, testState ) {
     const test = { env };
 
-    DirectHooks.forEach( type => {
+    Object.values( DirectHooks ).forEach( type => {
       test[type] = fn => {
         validateType( fn, 'function', `Hook "${type}" parameter should be a function` );
         testState.addHook( type, fn );
@@ -21,7 +21,7 @@ module.exports = {
         undo( undoFn ) {
           validateType( undoFn, 'function', 'Undo parameter should be a function' );
 
-          testState.addHook( ConditionalHooks.undo, fn, hash );
+          testState.addHook( ConditionalHooks.undo, undoFn, hash );
           return null;
         }
       };

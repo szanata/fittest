@@ -18,22 +18,24 @@ const dirname = './base_dir';
  * @see https://stackoverflow.com/a/42505874/3027390
  */
 function rimraf( dirPath ) {
-  if ( existsSync( dirPath ) ) {
-    readdirSync( dirPath ).forEach( entry => {
-      const entryPath = join( dirPath, entry );
-      if ( lstatSync( entryPath ).isDirectory() ) {
-        rimraf( entryPath );
-      } else {
-        unlinkSync( entryPath );
-      }
-    } );
-    rmdirSync( dirPath );
+  if ( !existsSync( dirPath ) ) {
+    return;
   }
+
+  readdirSync( dirPath ).forEach( entry => {
+    const entryPath = join( dirPath, entry );
+    if ( lstatSync( entryPath ).isDirectory() ) {
+      rimraf( entryPath );
+    } else {
+      unlinkSync( entryPath );
+    }
+  } );
+  rmdirSync( dirPath );
 }
 
 describe( 'getTestsPaths Spec', () => {
 
-  beforeEach( () => {
+  afterEach( () => {
     rimraf( dirname );
   } );
 

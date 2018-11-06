@@ -1,9 +1,10 @@
 const TestBitResult = require( './test_bit_result' );
-const { DirectHooks, ConditionalHooks }  = require( './types' );
+const { DirectHooks, ConditionalHooks } = require( './types' );
 
 module.exports = {
-  init( name, fn ) {
+  init( hash, name, fn ) {
     return {
+      hash,
       name,
       fn,
       hooks: [],
