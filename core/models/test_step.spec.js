@@ -1,7 +1,7 @@
 const Hook = require( './test_hook' );
 const Step = require( './test_step' );
 const TestBitResult = require( './test_bit_result' );
-const { DirectHooks } = require( './types' );
+const { SerialHooks } = require( './types' );
 
 describe( 'Test Step Spec', () => {
   it( 'Should create a step with hash, name and fn', () => {
@@ -32,7 +32,7 @@ describe( 'Test Step Spec', () => {
 
     it( 'Should return ok when the hooks are ok', () => {
       const step = Step.init();
-      const hook = Hook.init( DirectHooks.afterEach, () => {} );
+      const hook = Hook.init( SerialHooks.afterEach, () => {} );
       const result = TestBitResult.init();
       hook.result = result;
       step.hooks.push( hook );
@@ -41,7 +41,7 @@ describe( 'Test Step Spec', () => {
 
     it( 'Should return NOT ok when some hooks is not ok', () => {
       const step = Step.init();
-      const hook = Hook.init( DirectHooks.afterEach, () => {} );
+      const hook = Hook.init( SerialHooks.afterEach, () => {} );
       const result = TestBitResult.init();
       result.err = new Error();
       hook.result = result;

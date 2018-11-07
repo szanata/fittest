@@ -1,11 +1,12 @@
 const validateType = require( '../utils/validators/type' );
-const { DirectHooks, ConditionalHooks } = require( './types' );
+const { SimpleHooks, SerialHooks, ConditionalHooks } = require( './types' );
 
 module.exports = {
   init( env, testState ) {
     const test = { env };
 
-    Object.values( DirectHooks ).forEach( type => {
+    const hooksTypes = Object.values( SimpleHooks ).concat( Object.values( SerialHooks ) );
+    hooksTypes.forEach( type => {
       test[type] = fn => {
         validateType( fn, 'function', `Hook "${type}" parameter should be a function` );
         testState.addHook( type, fn );

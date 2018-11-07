@@ -1,6 +1,6 @@
 const TestInterface = require( './test_interface' );
 const { randomBytes } = require( 'crypto' );
-const { DirectHooks } = require( './types' );
+const { SimpleHooks, SerialHooks } = require( './types' );
 
 describe( 'Test Interface Spec', () => {
 
@@ -11,11 +11,19 @@ describe( 'Test Interface Spec', () => {
       expect( testInterface.env ).toEqual( env );
     } );
   } );
-
   describe( 'Hooks', () => {
-    it( 'Should expose direct hooks', () => {
+    it( 'Should expose simple hooks', () => {
       const testInterface = TestInterface.init( {}, {} );
-      expect( testInterface ).toHaveProperty( ...Object.values( DirectHooks ) );
+      Object.values( SimpleHooks ).forEach( h => {
+        expect( testInterface ).toHaveProperty( h );
+      } );
+    } );
+
+    it( 'Should expose serial hooks', () => {
+      const testInterface = TestInterface.init( {}, {} );
+      Object.values( SerialHooks ).forEach( h => {
+        expect( testInterface ).toHaveProperty( h );
+      } );
     } );
 
     it( 'Should validate hook argument', () => {

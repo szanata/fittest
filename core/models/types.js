@@ -1,8 +1,18 @@
 module.exports = {
-  DirectHooks: {
+  BlockTypes: {
+    beforeAll: 'beforeAll',
+    afterAll: 'afterAll'
+  },
+  RunnableTypes: {
+    test: 'test',
+    block: 'block'
+  },
+  SimpleHooks: {
     after: 'after',
+    before: 'before'
+  },
+  SerialHooks: {
     afterEach: 'afterEach',
-    before: 'before',
     beforeEach: 'beforeEach'
   },
   ConditionalHooks: {

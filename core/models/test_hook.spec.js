@@ -1,6 +1,6 @@
 const Hook = require( './test_hook' );
 const TestBitResult = require( './test_bit_result' );
-const { DirectHooks } = require( './types' );
+const { SimpleHooks } = require( './types' );
 
 describe( 'Test Hook spec', () => {
   it( 'Should return ok if the result is ok', () => {
@@ -19,7 +19,7 @@ describe( 'Test Hook spec', () => {
 
   it( 'Should serialize the hook', () => {
     const hook = Hook.init();
-    hook.type = DirectHooks.after;
+    hook.type = SimpleHooks.after;
 
     const result = TestBitResult.init();
     result.err = new Error();
@@ -28,7 +28,7 @@ describe( 'Test Hook spec', () => {
 
     expect( hook.serialize() ).toEqual( {
       result: result.serialize(),
-      type: DirectHooks.after
+      type: SimpleHooks.after
     } );
   } );
 } );

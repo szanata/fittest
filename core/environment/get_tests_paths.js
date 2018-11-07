@@ -1,5 +1,6 @@
 const { readdirSync, lstatSync, existsSync } = require( 'fs' );
 const { join } = require( 'path' );
+const PathError = require( '../models/errors/path_error' );
 
 const readFiles = src =>
   readdirSync( src ).reduce( ( arr, fName ) => {
@@ -33,5 +34,5 @@ module.exports = ( dirname, src ) => {
     }
   }
 
-  throw new Error( `Could not load "${path}".` );
+  throw new PathError( `Could not load "${path}".` );
 };

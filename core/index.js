@@ -1,91 +1,23 @@
 const { init: initFeatures } = require( './features' );
-const Logger = require( './logger' ).createInternalLogger();
-const executeTests = require( './execute_tests' );
-const executeBlock = require( './execute_block' );
+const { init: initEnvironment } = require( './init_environment' );
+const { execute } = require( './workflow' );
 const EventEmitter = require( 'events' );
-const defaults = require( './defaults' );
-const msToS = require( './utils/time/ms_to_s' );
-const getStackFrameDir = require( './utils/stack/get_stack_frame_dir' );
-const getTestsPaths = require( './utils/files/get_tests_paths' );
-
-const quit = status => process.exit( status );
-
-const getBrokenTestsCount = results => results.filter( r => !r.state ).length;
-
-const printResults = ( results, displaySuccessOutput ) =>
-  results
-    .filter( r => displaySuccessOutput || !r.state )
-    .forEach( r => {
-      Logger.flow( `Output for: "${r.name}"` );
-      r.logs.forEach( line => console.log( line ) );
-    } );
-
-const runBlock = async ( blockName, emitter, opts ) => {
-  if ( !opts[blockName] ) { return null; }
-
-  const [ path ] = getTestsPaths( opts.callerDir, opts[blockName] );
-  if ( !path ) { return null; }
-
-  Logger.flow( `Executing "${blockName}" block` );
-  const result = await executeBlock( path, emitter, opts );
-
-  if ( !result.state ) {
-    printResults( [ result ], opts );
-    process.exit( 1 );
-  } else {
-    // make the callback from the beforeAll available to each test
-    opts.context = result.context;
-  }
-
-  return result;
-};
-
-const getTotalTime = results => msToS( results.filter( v => !!v ).reduce( ( v, p ) => p.elapsedTime + v, 0 ) );
+const Printer = require( './printer' );
 
 module.exports = {
-
   async run( params ) {
-
-    const opts = Object.assign( { }, defaults, params );
-    const emitter = new EventEmitter();
-    const blocksResults = [];
-    opts.context = [];
-
     try {
-      opts.callerDir = getStackFrameDir( 3 );
-      const paths = getTestsPaths( opts.callerDir, opts.path );
-      const testsSize = paths.length;
+      const emitter = new EventEmitter();
+      const fwFeatures = await initFeatures( emitter );
+      const fwEnv = initEnvironment( params, fwFeatures );
+      const result = await execute( fwEnv );
 
-      opts.features = await initFeatures( emitter );
+      Printer.result( result );
 
-      Logger.flow( `Running ${testsSize} tests, relative path: "${opts.callerDir}"` );
-
-      blocksResults.push( await runBlock( 'beforeAll', emitter, opts ) );
-
-      emitter.on( 'single_test_completed', i => Logger.done( `[${i}/${testsSize}], awaiting other tasks...` ) );
-
-      Logger.spinStart();
-      const results = await executeTests( paths, emitter, opts );
-      Logger.spinStop();
-
-      printResults( results, opts.displaySuccessOutput );
-
-      blocksResults.push( await runBlock( 'afterAll', emitter, opts ) );
-
-      const brokenTestsCount = getBrokenTestsCount( results );
-      const totalTime = getTotalTime( results.concat( blocksResults ) );
-
-      if ( brokenTestsCount > 0 ) {
-        Logger.fail( `Tests failed: ${brokenTestsCount}. Total run time ${totalTime}s.` );
-        quit( 1 );
-      } else {
-        Logger.pass( `Tests passed. Total run time ${totalTime}s.` );
-        quit( 0 );
-      }
+      process.exit( result.ok ? 0 : 1 );
     } catch ( err ) {
-      Logger.fail( 'Startup error' );
       console.error( err );
-      quit( 1 );
+      process.exit( 1 );
     }
   }
 };

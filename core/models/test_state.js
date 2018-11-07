@@ -1,20 +1,21 @@
 const genId = require( '../utils/data/gen_id' );
 const Hook = require( './test_hook' );
 const Step = require( './test_step' );
-const { DirectHooks, ConditionalHooks } = require( './types' );
+const { SimpleHooks, SerialHooks, ConditionalHooks } = require( './types' );
 
 module.exports = {
-  init( ) {
+  init( path ) {
     const steps = [];
     const hooks = [];
     let name;
+    let logs;
 
     return {
       get beforeHooks() {
-        return hooks.filter( h => h.type === DirectHooks.before );
+        return hooks.filter( h => h.type === SimpleHooks.before );
       },
       get afterHooks() {
-        return hooks.filter( h => h.type === DirectHooks.after );
+        return hooks.filter( h => h.type === SimpleHooks.after );
       },
       get steps( ) {
         return steps;
@@ -22,8 +23,11 @@ module.exports = {
       set name( _name ) {
         name = _name;
       },
+      set logs( _logs ) {
+        logs = _logs;
+      },
       get undoSteps( ) {
-        return steps.reverse().filter( s => s.result.ok );
+        return steps.reverse().filter( s => s.result.ok ).filter( s => s.undoHook );
       },
       get ok( ) {
         const hooksOk = hooks.every( h => h.ok );
@@ -43,17 +47,19 @@ module.exports = {
         if ( type === ConditionalHooks.undo ) {
           const step = steps.find( s => s.hash === stepHash );
           step.hooks.push( Hook.init( type, fn ) );
-        } else if ( [ DirectHooks.beforeEach, DirectHooks.afterEach ].includes( type ) ) {
+        } else if ( Object.values( SerialHooks ).includes( type ) ) {
           steps.forEach( step => {
             step.hooks.push( Hook.init( type, fn ) );
           } );
-        } else if ( [ DirectHooks.before, DirectHooks.after ].includes( type ) ) {
+        } else if ( Object.values( SimpleHooks ).includes( type ) ) {
           hooks.push( Hook.init( type, fn ) );
         }
       },
       serialize( ) {
         return {
+          path,
           name,
+          logs,
           steps: this.steps.map( s => s.serialize() ),
           hooks: this.hooks.map( h => h.serialize() ),
           result: {

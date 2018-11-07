@@ -1,5 +1,5 @@
 const TestBitResult = require( './test_bit_result' );
-const { DirectHooks, ConditionalHooks } = require( './types' );
+const { SerialHooks, ConditionalHooks } = require( './types' );
 
 module.exports = {
   init( hash, name, fn ) {
@@ -10,10 +10,10 @@ module.exports = {
       hooks: [],
       result: TestBitResult.init(),
       get beforeHooks( ) {
-        return this.hooks.filter( h => h.type === DirectHooks.beforeEach );
+        return this.hooks.filter( h => h.type === SerialHooks.beforeEach );
       },
       get afterHooks( ) {
-        return this.hooks.filter( h => h.type === DirectHooks.afterEach );
+        return this.hooks.filter( h => h.type === SerialHooks.afterEach );
       },
       get undoHook( ) {
         return this.hooks.find( h => h.type === ConditionalHooks.undo );

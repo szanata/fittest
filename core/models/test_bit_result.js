@@ -1,11 +1,11 @@
 module.exports = {
-  init( ) {
+  init( et = 0, err = null ) {
     return {
       get ok() {
         return !this.err;
       },
-      et: 0,
-      err: null,
+      et,
+      err,
       serialize() {
         return {
           ok: this.ok,
