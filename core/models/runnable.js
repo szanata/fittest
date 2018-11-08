@@ -4,11 +4,11 @@ module.exports = {
   init( fn ) {
     return {
       fn,
-      output: [],
+      outputs: [],
       result: Result.init(),
       serialize() {
         return {
-          output: this.output,
+          outputs: this.outputs,
           result: this.result.serialize()
         };
       }

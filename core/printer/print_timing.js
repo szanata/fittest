@@ -12,38 +12,31 @@ const colors = {
   main: vars.fg.blue
 };
 
-
-const gridLayout = [ 59, 5, 11 ];
+const gridLayout = [ 59, 6, 11 ];
 const columnsLabels = [ 'Function', 'Err', 'Time' ];
 
 const printGridTop = () => console.log(
-  bc.box.bold.cnr.tl +
-  gridLayout.map( size => repeatChar( bc.box.bold.h, size ) ).join( bc.tx.conn.t.btb ) +
-  bc.box.bold.cnr.tr
+  bc.box.thin.cnr.tl +
+  gridLayout.map( size => repeatChar( bc.box.thin.h, size ) ).join( bc.box.thin.conn.t ) +
+  bc.box.thin.cnr.tr
 );
 
 const printGridBottom = () => console.log(
-  bc.box.bold.cnr.bl +
-  gridLayout.map( size => repeatChar( bc.box.bold.h, size ) ).join( bc.tx.conn.b.tbb ) +
-  bc.box.bold.cnr.br
+  bc.box.thin.cnr.bl +
+  gridLayout.map( size => repeatChar( bc.box.thin.h, size ) ).join( bc.box.thin.conn.b ) +
+  bc.box.thin.cnr.br
 );
 
 const printHeaderBottom = () => console.log(
-  bc.box.bold.conn.l +
-  gridLayout.map( size => repeatChar( bc.box.bold.h, size ) ).join( bc.tx.conn.c.tbtb ) +
-  bc.box.bold.conn.r
+  bc.box.thin.conn.l +
+  gridLayout.map( size => repeatChar( bc.box.thin.h, size ) ).join( bc.box.thin.conn.c ) +
+  bc.box.thin.conn.r
 );
 
-// const printThinLine = () => console.log(
-//   bc.tx.conn.r.tbb +
-//   gridLayout.map( size => repeatChar( bc.box.thin.h, size ) ).join( bc.box.thin.conn.c ) +
-//   bc.tx.conn.l.btb
-// );
-
 const printBoldLine = () => console.log(
-  bc.box.bold.conn.l +
-  gridLayout.map( size => repeatChar( bc.box.bold.h, size ) ).join( bc.tx.conn.c.tbtb ) +
-  bc.box.bold.conn.r
+  bc.box.thin.conn.l +
+  gridLayout.map( size => repeatChar( bc.box.thin.h, size ) ).join( bc.box.thin.conn.c ) +
+  bc.box.thin.conn.r
 );
 
 const printRow = ( info, infoColor = '' ) => {
@@ -57,12 +50,12 @@ const printRow = ( info, infoColor = '' ) => {
 
   Array( linesCount ).fill().forEach( ( _, line ) => {
     console.log(
-      bc.box.bold.v +
+      bc.box.thin.v +
       gridLayout.map( ( size, col ) => {
         const text = matrix[col][line] || '';
         return infoColor + repeatStart( ` ${text}`, size, ' ' ) + vars.reset;
       } ).join( bc.box.thin.v ) +
-      bc.box.bold.v
+      bc.box.thin.v
     );
   } );
 };

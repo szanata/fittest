@@ -13,7 +13,7 @@ module.exports = async ( runnable, timeoutTime, ...args ) => {
     result.err = err;
   }
   result.et = t.stop();
-  runnable.output = console.flush();
+  runnable.outputs = console.flush();
   runnable.result = result;
 
   return runnable.ok;
