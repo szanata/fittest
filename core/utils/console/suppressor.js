@@ -10,8 +10,8 @@ module.exports = {
             messages.push( { method: prop, args } );
           };
         }
-        if ( prop === 'output' ) {
-          return messages;
+        if ( prop === 'flush' ) {
+          return () => messages.splice( 0 );
         }
         return target[prop];
       }

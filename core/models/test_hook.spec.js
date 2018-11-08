@@ -16,19 +16,4 @@ describe( 'Test Hook spec', () => {
     hook.result = result;
     expect( hook.result.ok ).toBe( false );
   } );
-
-  it( 'Should serialize the hook', () => {
-    const hook = Hook.init();
-    hook.type = SimpleHooks.after;
-
-    const result = Result.init();
-    result.err = new Error();
-
-    hook.result = result;
-
-    expect( hook.serialize() ).toEqual( {
-      result: result.serialize(),
-      type: SimpleHooks.after
-    } );
-  } );
 } );

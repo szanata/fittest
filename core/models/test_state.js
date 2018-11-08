@@ -43,10 +43,12 @@ module.exports = {
         if ( type === ConditionalHooks.undo ) {
           const step = steps.find( s => s.hash === stepHash );
           step.hooks.push( Hook.init( type, fn ) );
+
         } else if ( Object.values( SerialHooks ).includes( type ) ) {
           const hook = Hook.init( type, fn );
           steps.forEach( step => step.hooks.push( hook ) );
           additionalStepHooks.push( hook );
+
         } else if ( Object.values( SimpleHooks ).includes( type ) ) {
           hooks.push( Hook.init( type, fn ) );
         }

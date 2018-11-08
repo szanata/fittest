@@ -199,7 +199,7 @@ module.exports = {
        */
       r: {
         bbt: '┡',
-        btb: '┞',
+        btt: '┞',
         tbb: '┢',
         ttb: '┟',
         btb: '┠',
@@ -213,7 +213,7 @@ module.exports = {
         ttb: '┵',
         tbt: '┶',
         btb: '┹',
-        btt: '┺',
+        bbt: '┺',
         btt: '┸',
         tbb: '┷',
         dtt: '╨',
@@ -227,7 +227,7 @@ module.exports = {
         btb: '┩',
         tbb: '┪',
         bbt: '┨',
-        tbt: '┥',
+        ttb: '┥',
         ddt: '╢',
         ttd: '╡'
       }

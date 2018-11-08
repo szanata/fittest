@@ -2,18 +2,19 @@ const Result = require( '../models/result' );
 const Timer = require( '../utils/time/timer' );
 const TimeoutKiller = require( '../utils/time/timeout_killer' );
 
-module.exports = async ( bit, timeoutTime, ...args ) => {
+module.exports = async ( runnable, timeoutTime, ...args ) => {
   const t = Timer.start();
   const result = Result.init();
   try {
     const timeoutKiller = TimeoutKiller.init( timeoutTime );
-    await bit.fn( ...args );
+    await runnable.fn( ...args );
     timeoutKiller.stop();
   } catch ( err ) {
     result.err = err;
   }
   result.et = t.stop();
-  bit.result = result;
+  runnable.output = console.flush();
+  runnable.result = result;
 
-  return bit.ok;
+  return runnable.ok;
 };

@@ -1,11 +1,5 @@
-module.exports = {
-  
-  exec( env, ctx, logger ) {
-    logger.info( 'Test with invalid syntax' );
+fittest( 'Synxtax test', test => {
+  test.step( 'This have a very wrong syntax inside', () => {
     1 = 2;
-  },
-
-  after( env, ctx, logger ) {
-    logger.ok( 'Rollback!' );
-  }
-};
+  });
+});

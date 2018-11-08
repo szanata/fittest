@@ -1,5 +1,5 @@
 const maxLength = 40;
-const vars = require( './std_vars' );
+const vars = require( '../utils/console/std_vars' );
 const { printSpace } = require( './tools' );
 
 const clearCurrentLine = () => {
@@ -39,7 +39,7 @@ module.exports = {
         printProgress( setProgress( createLine( humanProgress ), progressIndex ) );
 
         if ( progress === 1 ) {
-          console.log('');
+          console.log( '' );
         }
       }
     };

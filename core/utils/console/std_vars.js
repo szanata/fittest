@@ -18,7 +18,7 @@ module.exports = {
     cyan: '\x1b[36m',
     white: '\x1b[37m'
   },
-  
+
   bg: {
     black: '\x1b[40m',
     red: '\x1b[41m',

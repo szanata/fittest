@@ -1,17 +1,9 @@
-module.exports = {
-
-  async exec( env, ctx, logger ) {
-    logger.info( 'This test will take forever' );
+fittest( 'Timeout test', test => {
+  test.step( 'Timing out!', () => {
     return new Promise( resolve => {
       setTimeout( () => {
         resolve();
       }, 999999 );
     } );
-
-    throw new Error( 'This line should not be evaluated' );
-  },
-
-  after( env, ctx, logger ) {
-    logger.ok( 'Rollback!' );
-  }
-};
+  });
+});

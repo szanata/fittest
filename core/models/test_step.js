@@ -1,6 +1,7 @@
 const Result = require( './result' );
 const { SerialHooks, ConditionalHooks } = require( './types' );
 const Runnable = require( './runnable' );
+
 module.exports = {
   init( hash, name, fn ) {
     return {
@@ -26,9 +27,7 @@ module.exports = {
       serialize() {
         return {
           name: this.name,
-          main: {
-            result: this.main.result.serialize()
-          },
+          main: this.main.serialize(),
           result: this.result.serialize(),
           beforeHooks: this.beforeHooks.map( h => h.serialize() ),
           afterHooks: this.afterHooks.map( h => h.serialize() ),

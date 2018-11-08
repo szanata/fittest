@@ -10,8 +10,8 @@ fittest( 'Async test', test => {
   } );
 
   test.after( ctx => {
-    if ( !ctx.get( 'done') ) {
+    if ( !ctx.get( 'done' ) ) {
       throw new Error( 'Didn\'t await execution' );
     }
-  })
+  } );
 } );

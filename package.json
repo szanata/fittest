@@ -15,13 +15,12 @@
   "scripts": {
     "lint": "eslint './core' --fix && eslint './test' --fix",
     "test:unit": "jest --testPathIgnorePatterns=\"/node_modules|base_dir|/test/\" 2>&1",
-    "test:pass": "node ./test/pass_tests.js",
-    "test:basic": "node ./test/basic_features_tests.js",
+    "test:basic": "node ./test/basic_tests.js",
     "test:block": "node ./test/block_test.js",
     "test:index_file": "node ./test/index_file_test",
     "test:retry": "node ./test/retry_test",
     "test:broken": "node ./test/broken_tests",
-    "test": "npm run test:pass && npm run test:index_file && npm run test:retry && npm run test:block && npm run test:unit"
+    "test": "npm run test:basic && test:unit"
   },
   "repository": {
     "type": "git",

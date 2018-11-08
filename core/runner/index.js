@@ -5,7 +5,7 @@ const deserializeMap = require( '../utils/object/deserialize_map' );
 const createTestEnv = require( './create_test_env' );
 const consoleSuppressor = require( '../utils/console/suppressor' );
 
-// consoleSuppressor.init();
+consoleSuppressor.init();
 
 const [ , , args ] = process.argv;
 const { id, args: { type, filePath, fwEnv } } = JSON.parse( args );
@@ -22,7 +22,6 @@ const timeoutTime = fwEnv.timeoutTime;
 ( () =>
   ( type === 'test' ? runTest : runBlock )( filePath, timeoutTime, testCtx, testEnv )
 )().then( state => {
-  state.logs = console.output;
   process.send( state.serialize() );
   process.exit( 0 );
 } ).catch( err => {
