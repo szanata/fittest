@@ -1,6 +1,6 @@
-const FwResult = require( './models/fw_result' );
+const FwResult = require( '../models/fw_result' );
 const executeTests = require( './execute_tests' );
-const Timer = require( '../utils/timer/timer' );
+const Timer = require( '../utils/time/timer' );
 const executeBlock = require( './execute_block' );
 const { BlockTypes: { beforeAll, afterAll } } = require( '../models/types' );
 

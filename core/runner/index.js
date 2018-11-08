@@ -3,11 +3,9 @@ const runBlock = require( './run_block' );
 const CustomEventEmitter = require( '../utils/events/custom_event_emitter' );
 const deserializeMap = require( '../utils/object/deserialize_map' );
 const createTestEnv = require( './create_test_env' );
-// const serializeMap = require( '../utils/object/serialize_map' );
+const consoleSuppressor = require( '../utils/console/suppressor' );
 
-// const { overwriteConsole } = require( '../logger' );
-
-// overwriteConsole( );
+// consoleSuppressor.init();
 
 const [ , , args ] = process.argv;
 const { id, args: { type, filePath, fwEnv } } = JSON.parse( args );
@@ -19,10 +17,15 @@ process.on( 'message', m => emitter.emit( m.name, m.args ) );
 
 const testCtx = deserializeMap( fwEnv.context );
 const testEnv = createTestEnv( fwEnv, id, emitter );
+const timeoutTime = fwEnv.timeoutTime;
 
-( async () =>
-  ( type === 'test' ? runTest : runBlock )( filePath, fwEnv, testCtx, testEnv )
-)().then( testState => {
-  process.send( testState.serialize() );
+( () =>
+  ( type === 'test' ? runTest : runBlock )( filePath, timeoutTime, testCtx, testEnv )
+)().then( state => {
+  state.logs = console.output;
+  process.send( state.serialize() );
   process.exit( 0 );
+} ).catch( err => {
+  console.log( err );
+  process.exit( 1 );
 } );

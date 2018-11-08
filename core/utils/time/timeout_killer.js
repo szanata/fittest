@@ -1,7 +1,7 @@
 const TimeoutError = require( '../../models/errors/timeout_error' );
 
 module.exports = {
-  start( t ) {
+  init( t ) {
     const timeout = setTimeout( () => {
       throw new TimeoutError();
     }, t );

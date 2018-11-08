@@ -1,5 +1,5 @@
 const { fork } = require( 'child_process' );
-const genId = require( './utils/data/gen_id' );
+const genId = require( '../data/gen_id' );
 
 const createHandler = proc => ( { name, args } ) => {
   setTimeout( () => {

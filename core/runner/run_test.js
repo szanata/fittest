@@ -1,60 +1,60 @@
+const executeRunnable = require( './execute_runnable' );
 const Fittest = require( '../models/fittest' );
 const TestState = require( '../models/test_state' );
-const TestInterface = require( '../models/test_public_interface' );
-const TimeoutKiller = require( '../utils/time/timeout_killer' );
+const TestInterface = require( '../models/test_interface' );
 
-const executeTestBit = require( './execute_test_bit' );
-
-const executeHooks = async ( hooks, ...args ) => {
+const executeHooks = async ( hooks, timeoutTime, ...args ) => {
   for ( const hook of hooks ) {
-    await executeTestBit( hook, ...args );
-    if ( !hook.ok ) { return false; }
+    await executeRunnable( hook, timeoutTime, ...args );
+    if ( !hook.result.ok ) { return false; }
   }
   return true;
 };
 
-const executeSteps = async ( steps, ...args ) => {
+const executeSteps = async ( steps, timeoutTime, ...args ) => {
   for ( const step of steps ) {
-    await executeHooks( step.beforeHooks, ...args );
+    await executeHooks( step.beforeHooks, timeoutTime, ...args );
 
-    if ( step.ok ) {
-      await executeTestBit( step, ...args );
+    if ( step.result.ok ) {
+      await executeRunnable( step.main, timeoutTime, ...args );
     }
 
-    await executeHooks( step.afterHooks, ...args );
+    await executeHooks( step.afterHooks, timeoutTime, ...args );
 
-    if ( !step.ok ) { return false; }
+    if ( !step.result.ok ) { return false; }
   }
   return true;
 };
 
-const executeUndoSteps = async ( steps, ...args ) => {
+const executeUndoSteps = async ( steps, timeoutTime, ...args ) => {
   for ( const step of steps ) {
-    const ok = await executeTestBit( step.undoHook, ...args );
+    const ok = await executeRunnable( step.undoHook, timeoutTime, ...args );
     if ( !ok ) { return false; }
   }
   return true;
 };
 
-module.exports = async ( file, fwEnv, testCtx, testEnv ) => {
+module.exports = async ( file, timeoutTime, testCtx, testEnv ) => {
   const testState = TestState.init( file );
   const testInterface = TestInterface.init( testEnv, testState );
   const fittest = Fittest.init( testInterface, testState );
 
-  TimeoutKiller.init( fwEnv.timeoutTime );
-
   global.fittest = fittest;
-  require( file ); // eslint-disable-line global-require
-
-  const beforeHooksOk = await executeHooks( testState.beforeHooks, testCtx );
-
-  if ( beforeHooksOk ) {
-    await executeSteps( testState.steps, testCtx );
-    await executeUndoSteps( testState.undoSteps, testCtx );
+  try {
+    require( file ); // eslint-disable-line global-require
+  } catch ( err ) {
+    testState.err = err;
+    return testState;
   }
 
-  await executeHooks( testState.afterHooks, testCtx );
+  const beforeHooksOk = await executeHooks( testState.beforeHooks, timeoutTime, testCtx );
 
-  TimeoutKiller.stop();
+  if ( beforeHooksOk ) {
+    await executeSteps( testState.steps, timeoutTime, testCtx );
+    await executeUndoSteps( testState.undoSteps, timeoutTime, testCtx );
+  }
+
+  await executeHooks( testState.afterHooks, timeoutTime, testCtx );
+
   return testState;
 };

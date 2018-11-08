@@ -1,19 +1,17 @@
-const TestBitResult = require( './test_bit_result' );
+const Runnable = require( './runnable' );
 
 module.exports = {
   init( fn ) {
-    return {
-      fn,
+    const runnable = Runnable.init( fn );
+    return Object.assign( Object.create( runnable ), {
       logs: [],
-      return: TestBitResult.init(),
-      get ok() {
-        return this.result.ok;
-      },
+      context: [],
       serialize( ) {
-        return {
-          result: this.result.serialize()
-        };
+        return Object.assign( runnable.serialize.call( this ), {
+          logs: this.logs,
+          context: this.context
+        } );
       }
-    };
+    } );
   }
 };

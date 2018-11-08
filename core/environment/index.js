@@ -1,6 +1,5 @@
 const getTestsPaths = require( './get_tests_paths' );
 const FwEnv = require( '../models/fw_env' );
-const getStackFrameDir = require( '../utils/stack/get_stack_frame_dir' );
 const { BlockTypes } = require( '../models/types' );
 const runValidations = require( './run_validations' );
 
@@ -19,18 +18,18 @@ const blocksOptions = Object.values( BlockTypes );
 const optional = [ 'timeoutTime', 'retries' ];
 
 module.exports = {
-  init( userOpts, fwFeatures ) {
+  init( userOpts, fwFeatures, relativeDir ) {
     runValidations( userOpts );
 
     const fwEnv = FwEnv.init();
-    const relativeDir = getStackFrameDir( 3 );
 
     fwEnv.features = fwFeatures;
     fwEnv.relativeDir = relativeDir;
-    fwEnv.testsPaths = getTestsPaths( relativeDir, userOpts.path );
+
+    fwEnv.testsPaths = getTestsPaths( relativeDir, userOpts.testsDir );
 
     blocksOptions.filter( b => userOpts[b] ).forEach( b => {
-      fwEnv.blockPaths[b] = getTestsPaths( relativeDir, userOpts[b] );
+      fwEnv.blockPaths[b] = getTestsPaths( relativeDir, userOpts[b] )[0];
     } );
 
     optional.filter( p => userOpts[p] ).forEach( p => {

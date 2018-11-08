@@ -2,13 +2,13 @@ const genId = require( '../utils/data/gen_id' );
 const Hook = require( './test_hook' );
 const Step = require( './test_step' );
 const { SimpleHooks, SerialHooks, ConditionalHooks } = require( './types' );
+const Result = require( './result' );
 
 module.exports = {
   init( path ) {
     const steps = [];
     const hooks = [];
-    let name;
-    let logs;
+    const additionalStepHooks = [];
 
     return {
       get beforeHooks() {
@@ -20,27 +20,23 @@ module.exports = {
       get steps( ) {
         return steps;
       },
-      set name( _name ) {
-        name = _name;
-      },
-      set logs( _logs ) {
-        logs = _logs;
-      },
+      logs: [],
+      name: null,
+      err: null,
       get undoSteps( ) {
-        return steps.reverse().filter( s => s.result.ok ).filter( s => s.undoHook );
+        return steps.slice().reverse().filter( s => s.main.result.ok ).filter( s => s.undoHook );
       },
-      get ok( ) {
-        const hooksOk = hooks.every( h => h.ok );
-        const stepsOk = steps.every( s => s.ok );
-        return hooksOk && stepsOk;
-      },
-      get et( ) {
-        return this.hooks.reduce( ( sum, h ) => h.result.et + sum, 0 ) +
-          this.steps.reduce( ( sum, s ) => s.result.et + sum + s.hooksEt, 0 );
+      get result() {
+        const ok = !this.err && hooks.every( h => h.result.ok ) && steps.every( s => s.result.ok );
+        const et = hooks.reduce( ( sum, hook ) => sum + hook.result.et, 0 ) +
+          steps.reduce( ( sum, step ) => sum + step.result.et, 0 );
+        return Result.init( { ok, et, err: this.err } );
       },
       addStep( name, fn ) {
         const hash = genId();
-        steps.push( Step.init( hash, name, fn ) );
+        const step = Step.init( hash, name, fn );
+        steps.push( step );
+        additionalStepHooks.forEach( hook => step.hooks.push( hook ) );
         return hash;
       },
       addHook( type, fn, stepHash ) {
@@ -48,9 +44,9 @@ module.exports = {
           const step = steps.find( s => s.hash === stepHash );
           step.hooks.push( Hook.init( type, fn ) );
         } else if ( Object.values( SerialHooks ).includes( type ) ) {
-          steps.forEach( step => {
-            step.hooks.push( Hook.init( type, fn ) );
-          } );
+          const hook = Hook.init( type, fn );
+          steps.forEach( step => step.hooks.push( hook ) );
+          additionalStepHooks.push( hook );
         } else if ( Object.values( SimpleHooks ).includes( type ) ) {
           hooks.push( Hook.init( type, fn ) );
         }
@@ -58,14 +54,13 @@ module.exports = {
       serialize( ) {
         return {
           path,
-          name,
-          logs,
-          steps: this.steps.map( s => s.serialize() ),
-          hooks: this.hooks.map( h => h.serialize() ),
-          result: {
-            ok: this.ok,
-            et: this.et
-          }
+          name: this.name,
+          logs: this.logs,
+          steps: steps.map( s => s.serialize() ),
+          beforeHooks: this.beforeHooks.map( h => h.serialize() ),
+          afterHooks: this.afterHooks.map( h => h.serialize() ),
+          hooks: hooks.map( h => h.serialize() ),
+          result: this.result.serialize()
         };
       }
     };

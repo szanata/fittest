@@ -1,4 +1,4 @@
-const invokeRunner = require( './invoker_runner' );
+const invokeRunner = require( './invoke_runner' );
 const { cpus } = require( 'os' );
 const { RunnableTypes: { test: testType } } = require( '../models/types' );
 
@@ -43,14 +43,12 @@ module.exports = ( fwResults, emitter, fwEnv ) => new Promise( resolve => {
         task.retries++;
         tasks.push( task );
       } else {
+        emitter.emit( 'task_done' );
         Counters.completed++;
       }
 
-      fwResults.state.push( testState );
+      fwResults.states.tests.push( testState );
       Counters.running--;
     }
-
-
-    // emitter.emit( 'single_test_completed', Counters.done );
   }, 100 );
 } );

@@ -1,14 +1,13 @@
-const TestBitResult = require( './test_bit_result' );
+const Result = require( './result' );
 const { SerialHooks, ConditionalHooks } = require( './types' );
-
+const Runnable = require( './runnable' );
 module.exports = {
   init( hash, name, fn ) {
     return {
       hash,
       name,
-      fn,
+      main: Runnable.init( fn ),
       hooks: [],
-      result: TestBitResult.init(),
       get beforeHooks( ) {
         return this.hooks.filter( h => h.type === SerialHooks.beforeEach );
       },
@@ -18,17 +17,22 @@ module.exports = {
       get undoHook( ) {
         return this.hooks.find( h => h.type === ConditionalHooks.undo );
       },
-      get ok( ) {
-        return this.result.ok && this.hooks.every( h => h.ok );
-      },
-      get hooksEt( ) {
-        return this.hooks.reduce( ( s, h ) => h.result.et + s, 0 );
+      get result( ) {
+        const et = this.hooks.reduce( ( s, hook ) => hook.result.et + s, 0 ) +
+          this.main.result.et;
+        const ok = this.main.result.ok && this.hooks.every( hook => hook.result.ok );
+        return Result.init( { ok, et } );
       },
       serialize() {
         return {
           name: this.name,
+          main: {
+            result: this.main.result.serialize()
+          },
           result: this.result.serialize(),
-          hooksEt: this.hooksEt,
+          beforeHooks: this.beforeHooks.map( h => h.serialize() ),
+          afterHooks: this.afterHooks.map( h => h.serialize() ),
+          undoHook: this.undoHook ? this.undoHook.serialize() : null,
           hooks: this.hooks.map( h => h.serialize() )
         };
       }

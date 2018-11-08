@@ -1,7 +1,7 @@
 const Hook = require( './test_hook' );
 const Step = require( './test_step' );
 const TestState = require( './test_state' );
-const TestBitResult = require( './test_bit_result' );
+const Result = require( './result' );
 const { SimpleHooks, SerialHooks, ConditionalHooks } = require( './types' );
 
 describe( 'Test State Spec', () => {
@@ -66,7 +66,7 @@ describe( 'Test State Spec', () => {
 
       expect( testState.steps.length ).toBe( 2 );
 
-      expect( testState.steps.find( s =>s.hash === hash ).hooks[0].serialize() )
+      expect( testState.steps.find( s => s.hash === hash ).hooks[0].serialize() )
         .toEqual( Hook.init( ConditionalHooks.undo, hookFn ).serialize() );
     } );
 
@@ -95,7 +95,7 @@ describe( 'Test State Spec', () => {
       testState.addHook( ConditionalHooks.undo, hookFn, hash3 );
       testState.addHook( ConditionalHooks.undo, hookFn, hash5 );
 
-      testState.steps[0].result = TestBitResult.init( 0, new Error() );
+      testState.steps[0].main.result = Result.init( { ok: false } );
 
       const steps = testState.undoSteps;
       expect( steps.length ).toBe( 3 );
