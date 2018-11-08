@@ -1,10 +1,11 @@
 const maxLength = 40;
 const vars = require( '../utils/console/std_vars' );
 const { printSpace } = require( './tools' );
+const readline = require( 'readline' );
 
 const clearCurrentLine = () => {
-  process.stdout.clearLine();
-  process.stdout.cursorTo( 0 );
+  readline.clearLine( process.stdout);
+  readline.cursorTo( process.stdout, 0, null );
 };
 
 const createLine = number => {

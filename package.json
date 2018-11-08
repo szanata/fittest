@@ -20,7 +20,7 @@
     "test:index_file": "node ./test/index_file_test",
     "test:retry": "node ./test/retry_test",
     "test:broken": "node ./test/broken_tests",
-    "test": "npm run test:basic && test:unit"
+    "test": "npm run test:basic && npm run test:unit"
   },
   "repository": {
     "type": "git",
