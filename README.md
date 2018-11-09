@@ -44,18 +44,23 @@ project
 
 ### 4. Create some tests
 
-Each of your tests will look something like this
-```
+Each of your tests will look something like this:
+
+```js
 fittest( 'Your test name', test => {
 
   test.before( () => {
-    'run me before';
+    // run me before
   });
 
   test.step( 'Some step on your tes script', () => {
-    'do something'
+    // do something
   }).undo( () => {
-    'undo what you did'
+    // undo what you did
+  });
+  
+  test.after( () => {
+    // run me after
   });
 });
 ```
