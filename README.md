@@ -38,7 +38,7 @@ fittest.run( { testsDir: './tests' } );
 
 ```
 project    
-|-- run_tests.js
+|-- test_index.js
 |-- tests
 ```
 
