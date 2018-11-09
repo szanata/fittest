@@ -1,17 +1,15 @@
 # fittest (Fast InTegration TEST)
 [![Build Status](https://travis-ci.org/szanata/fittest.svg?branch=master)](https://travis-ci.org/szanata/fit-integration-tests)
 
-**fittest** (Fast InTegration TESTs) is a tool to create ingetration tests.
+**fittest** (Fast InTegration TESTs) is a tool to create integration tests.
 
 ## Main features
 
-- Run tests in parallel according to the available CPUs
-- Each test runs on a new isolated node process
-- Test can receive webhooks on a public Url created dynamically
-- The code can use a "await" to stop until a webhook is received
-- Don't rely on *mocha* or any other test framework
-- Can be used with *chai* or others assertion tools
-- Fast, I mean... really fast
+- Create, organize and run complex multi step integration test scripts
+- Use maximum parallelism and process isolation
+- Use webhooks to test your services on a public url each test spin
+- Use your favorite assertion library
+- Get detailed breakdown of each step timing
 
 ## Setup
 
@@ -21,19 +19,19 @@
 npm install fittest
 ```
 
-### 2. Create a startup js file on your project to run the tests
+### 2. Create a startup .js file on your project to run the tests
 
 ```
 project    
-|-- run_tests.js    
+|-- test_index.js    
 ```
 
 This is a start point, were the options are set and the whole thing starts.
 
 ```js
-const IntegrationTestFw = require( 'mw-integration-test-fw' );
+const fittest = require( 'fittest' );
 
-IntegrationTestFw.run( { path: './tests' } );
+fittest.run( { testsDir: './tests' } );
 ```
 
 ### 3. Create a folder for the actual tests
@@ -46,56 +44,72 @@ project
 
 ### 4. Create some tests
 
-Each of your tests must have a file with this interface:
+Each of your tests will look something like this
 ```
-module.exports = {
+fittest( 'Your test name', test => {
 
-  before( env, ctx, logger ) { 
+  test.before( () => {
+    'run me before';
+  });
 
-  },
-
-  exec( env, ctx, logger ) { 
-
-  },
-
-  after( env, ctx, logger ) { 
-
-  }
-};
+  test.step( 'Some step on your tes script', () => {
+    'do something'
+  }).undo( () => {
+    'undo what you did'
+  });
+});
 ```
 
 ## Test anatomy
 
-Every test have 3 distinct phases. The main phase `exec` is mandatory.
+Every test consist of *n* steps (`step`), where each of those will run synchronously.
 
-If any phase fails, the tests are considered failing.
+After all steps run, each `step.undo` will run in a reverse order.
 
-Phases run in order and synchronously. Each phase is called by a method with the same name:
+The tests can have hooks: *before*, *beforeEach*, *after*, *afterEach*.
 
-| Name | Description |
-| ---- | ----------- |
-| *before* | This will run before the `exec` method. If it fails, the test stops here, failing. |
-| *exec* | This will have your test logic. If it fails, the next phase will run anyway. The tests failed. |
-| *after* | This will run after the `exec` method. If if fails, the tests fail. |
+`before` and `after` will run before and after all the steps, respectively.
 
+`beforeEach` and `afterEach` will run before and after each step, respectively.
 
 ### Arguments
 
-All test methods (`before`, `exec` and `rollback`) receive the same arguments **env**, **ctx**, **logger**:
-- [env](#arg-env)
-- [ctx](#arg-ctx)
-- [logger](#arg-logger)
+All test methods will receive the same argument: `context`. It is used to share values between each test method.
 
-#### Arg: env
+It's a js `Map` like object, but unfortunately there are some restrictions using it: do not set any keys or values different than Number, String, Boolean, Arrays or Literal Objects. This limitations is due the way this object will be serialized to be shared across the test methods or between blocks.
 
-The test environment, this is a object containing any tools the framework provides.
+### *fittest* Function
 
+TBD;
+
+### *test* Object
+
+The test object, received in the callback function of the `fittest` global fn provides all the tools to run tests.
+
+It provide the methods to create steps and hooks, and also the tools to use the webhooks:
+
+Methods:
+| Method | Args | Return | Description |
+| ------ | ---- | ------ | ----------- |
+| .step() | name, fn | stepObj | Create a new test step. Using the return value, a `undo` hook can be attached to the step. |
+| .before() | fn | nil | Create a `before` hook. It will run once, before all steps. |
+| .after() | fn | nil | Create a `after` hook. It will run once, after all the steps. |
+| .beforeEach() | fn | nil | Create a `beforeEach` hook. It will run before each of the steps. |
+| .afterEach() | fn | nil | Create a `afterEach` hook. It will run after each of the steps. |
+
+`.env` property:
 | Property | Type | Description |
 | -------- | ---- | ----------- |
 | serverUrl | string | The public accessible Url so the test can receive webhooks via GET or POST. |
 | asyncEvent | function | An async function to await for a event to occur. See below. If the event don't happen in the time limit, it throws an error. |
 
-##### .asyncEvent usage:
+#### *.step()* usage:
+
+
+TDB;
+
+
+##### *.env.asyncEvent()* usage:
 
 .asyncEvent is used to await to a specific async event from *fittest* to happen. It always returns a promise.
 
@@ -138,32 +152,6 @@ axios.get( env.serverUrl );
 // get the response
 const response = await env.asyncEvent( 'http-get' );
 ```
-
-#### Arg: ctx
-
-The test context. Used to shared values between each test phase.
-
-It's a js Map object, but unfortunately there are some restrictions using it: do not set any keys or values different than Number, String, Boolean, Arrays or Literal Objects. This limitations is due the way this object will be serialized to be shared across the test phases or between the "beforeAll" and the tests and the "afterAll" block.
-
-Each phase can change it at will.
-
-#### Arg: logger
-
-A handy tool to print test outputs.
-
-*Important: As the tests run in parallel, any stdout like console.log will be mixed across all tests, use this logger instead.*
-
-The logger have the following methods:
-
-| Method | Description | Output color |
-| ------ | ----------- | ------------ |
-| log | Use this to print some basic logs | white |
-| warn | Use this to print something important | yellow |
-| ok | Use this to print something good | green |
-| error | Use this to print an error | red |
-| info | Use this to print an oddity | blue |
-
-All logger methods can receive any number of arguments, which will be converted to string and concatenated using a space.
 
 ### Tests path
 
@@ -212,7 +200,6 @@ Configurations send to `.run()` method.
 | -------- | ---- | -------- | ------- | ---------- |
 | testsDir | string | **yes** | *none* | The directory where the tests will be read from. |
 | timeoutTime | string | | 5 minutes | The time in milliseconds to wait before a test is killed due timeout. |
-| displaySuccessOutput | bool | | false | Print out logs from tests that passed. |
 | retries | number | | 0 | Number of retries to perform on each test that fails. |
 | beforeAll | string | | *none* | Path to a script file to run before the tests |
 | afterAll | string | | *none* | Path to a script file to run after the tests |
