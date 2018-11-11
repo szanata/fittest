@@ -4,7 +4,7 @@ const { printSpace } = require( './tools' );
 const readline = require( 'readline' );
 
 const clearCurrentLine = () => {
-  readline.clearLine( process.stdout);
+  readline.clearLine( process.stdout );
   readline.cursorTo( process.stdout, 0, null );
 };
 

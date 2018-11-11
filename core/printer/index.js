@@ -8,9 +8,9 @@ const printErrors = require( './print_errors' );
 module.exports = {
   result( fwResult ) {
     printResult( fwResult );
-    printTiming( fwResult );
-    printOutputs( fwResult );
-    printErrors( fwResult );
+    // printTiming( fwResult );
+    // printOutputs( fwResult );
+    // printErrors( fwResult );
   },
   startup( fwEnv ) {
     printSetup( fwEnv );

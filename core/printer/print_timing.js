@@ -1,5 +1,5 @@
 const msToS = require( '../utils/time/ms_to_s' );
-const { repeatChar, repeatStart } = require( './tools' );
+const { repeatChar, repeatStart, printTitle } = require( './tools' );
 const vars = require( '../utils/console/std_vars' );
 const bc = require( '../utils/console/box_chars' );
 
@@ -16,26 +16,26 @@ const gridLayout = [ 59, 6, 11 ];
 const columnsLabels = [ 'Function', 'Err', 'Time' ];
 
 const printGridTop = () => console.log(
-  bc.box.thin.cnr.tl +
-  gridLayout.map( size => repeatChar( bc.box.thin.h, size ) ).join( bc.box.thin.conn.t ) +
-  bc.box.thin.cnr.tr
+  bc.extras.round.cnr.tl +
+  gridLayout.map( size => repeatChar( size, bc.box.thin.h ) ).join( bc.box.thin.conn.t ) +
+  bc.extras.round.cnr.tr
 );
 
 const printGridBottom = () => console.log(
-  bc.box.thin.cnr.bl +
-  gridLayout.map( size => repeatChar( bc.box.thin.h, size ) ).join( bc.box.thin.conn.b ) +
-  bc.box.thin.cnr.br
+  bc.extras.round.cnr.bl +
+  gridLayout.map( size => repeatChar( size, bc.box.thin.h ) ).join( bc.box.thin.conn.b ) +
+  bc.extras.round.cnr.br
 );
 
 const printHeaderBottom = () => console.log(
   bc.box.thin.conn.l +
-  gridLayout.map( size => repeatChar( bc.box.thin.h, size ) ).join( bc.box.thin.conn.c ) +
+  gridLayout.map( size => repeatChar( size, bc.box.thin.h ) ).join( bc.box.thin.conn.c ) +
   bc.box.thin.conn.r
 );
 
 const printBoldLine = () => console.log(
   bc.box.thin.conn.l +
-  gridLayout.map( size => repeatChar( bc.box.thin.h, size ) ).join( bc.box.thin.conn.c ) +
+  gridLayout.map( size => repeatChar( size, bc.box.thin.h ) ).join( bc.box.thin.conn.c ) +
   bc.box.thin.conn.r
 );
 
@@ -78,8 +78,7 @@ const printLine = ( label, result, color ) => {
 };
 
 module.exports = fwResult => {
-  console.log( 'Detailed Breakdown' );
-
+  printTitle( 'Detailed Breakdown' );
   printHeader();
 
   if ( fwResult.states.beforeAll ) {
@@ -132,4 +131,5 @@ module.exports = fwResult => {
   }
 
   printGridBottom();
+  console.log();
 };

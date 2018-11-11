@@ -1,4 +1,4 @@
-const printErrors = (type, result) => {
+const printErrors = ( type, result ) => {
   // console.log( type, result.err );
 };
 
