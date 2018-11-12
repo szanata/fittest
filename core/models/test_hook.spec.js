@@ -1,6 +1,5 @@
 const Hook = require( './test_hook' );
 const Result = require( './result' );
-const { SimpleHooks } = require( './types' );
 
 describe( 'Test Hook spec', () => {
   it( 'Should return ok if the result is ok', () => {

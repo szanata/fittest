@@ -22,7 +22,7 @@ const timeoutTime = fwEnv.timeoutTime;
 ( () =>
   ( type === 'test' ? runTest : runBlock )( filePath, timeoutTime, testCtx, testEnv )
 )().then( state => {
-  process.send( state.serialize() );
+  process.send( state ? state.serialize() : null );
   process.exit( 0 );
 } ).catch( err => {
   console.log( err );

@@ -3,14 +3,12 @@ const printTiming = require( './print_timing' );
 const printOutputs = require( './print_outputs' );
 const printSetup = require( './print_setup' );
 const printResult = require( './print_result' );
-const printErrors = require( './print_errors' );
 
 module.exports = {
   result( fwResult ) {
     printResult( fwResult );
-    // printTiming( fwResult );
-    // printOutputs( fwResult );
-    // printErrors( fwResult );
+    printTiming( fwResult );
+    printOutputs( fwResult );
   },
   startup( fwEnv ) {
     printSetup( fwEnv );

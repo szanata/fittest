@@ -17,11 +17,11 @@ module.exports = {
 
       Printer.listenUpdates( emitter, fwEnv );
 
-      const result = await execute( emitter, fwEnv );
+      const fwResult = await execute( emitter, fwEnv );
 
-      Printer.result( result );
+      Printer.result( fwResult );
 
-      process.exit( result.ok ? 0 : 1 );
+      process.exit( fwResult.ok ? 0 : 1 );
     } catch ( err ) {
       console.error( err );
       process.exit( 1 );

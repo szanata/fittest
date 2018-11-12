@@ -1,6 +1,6 @@
 const maxLength = 40;
 const vars = require( '../utils/console/std_vars' );
-const { printSpace } = require( './tools' );
+const repeatSpace = require( '../utils/console/print/repeat_space' );
 const readline = require( 'readline' );
 
 const clearCurrentLine = () => {
@@ -11,8 +11,8 @@ const clearCurrentLine = () => {
 const createLine = number => {
   const info = `${number}%`;
   const lineSize = maxLength - info.length;
-  const rest = printSpace( lineSize % 2 );
-  const space = printSpace( Math.floor( lineSize / 2 ) );
+  const rest = repeatSpace( lineSize % 2 );
+  const space = repeatSpace( Math.floor( lineSize / 2 ) );
   return space + info + space + rest;
 };
 
@@ -28,6 +28,8 @@ module.exports = {
   init( size ) {
     let done = 0;
 
+    console.log( 'Running tests...' );
+
     printProgress( setProgress( createLine( 0 ), 0 ) );
 
     return {
@@ -39,8 +41,9 @@ module.exports = {
 
         printProgress( setProgress( createLine( humanProgress ), progressIndex ) );
 
-        if ( progress === 1 ) {
-          console.log( '' );
+        if ( progress >= 1 ) {
+          console.log();
+          console.log();
         }
       }
     };

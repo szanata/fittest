@@ -1,7 +1,7 @@
 const msToS = require( '../utils/time/ms_to_s' );
-const { repeatChar, repeatStart, printTitle } = require( './tools' );
 const vars = require( '../utils/console/std_vars' );
 const bc = require( '../utils/console/box_chars' );
+const repeatChar = require( '../utils/console/print/repeat_char' );
 
 const colors = {
   before: vars.fg.magenta + vars.dim,
@@ -15,11 +15,11 @@ const colors = {
 const gridLayout = [ 59, 6, 11 ];
 const columnsLabels = [ 'Function', 'Err', 'Time' ];
 
-const printGridTop = () => console.log(
-  bc.extras.round.cnr.tl +
-  gridLayout.map( size => repeatChar( size, bc.box.thin.h ) ).join( bc.box.thin.conn.t ) +
-  bc.extras.round.cnr.tr
-);
+// const printGridTop = () => console.log(
+//   bc.extras.round.cnr.tl +
+//   gridLayout.map( size => repeatChar( size, bc.box.thin.h ) ).join( bc.box.thin.conn.t ) +
+//   bc.extras.round.cnr.tr
+// );
 
 const printGridBottom = () => console.log(
   bc.extras.round.cnr.bl +
@@ -53,7 +53,7 @@ const printRow = ( info, infoColor = '' ) => {
       bc.box.thin.v +
       gridLayout.map( ( size, col ) => {
         const text = matrix[col][line] || '';
-        return infoColor + repeatStart( ` ${text}`, size, ' ' ) + vars.reset;
+        return infoColor + ` ${text}`.padEnd( size, ' ' ) + vars.reset;
       } ).join( bc.box.thin.v ) +
       bc.box.thin.v
     );
@@ -65,7 +65,21 @@ const printEmptyRow = () => printRow( [ ' ', ' ', ' ' ] );
 const colorize = ( ok, color ) => ( ok ? color : vars.fg.red + vars.strikethrough );
 
 const printHeader = () => {
-  printGridTop();
+  const title = 'Detailed timing';
+  const top = bc.extras.round.cnr.tl + repeatChar( title.length + 2, bc.box.thin.h ) + bc.extras.round.cnr.tr;
+  console.log( top );
+  console.log( bc.box.thin.v + ` ${title} ` + bc.box.thin.v );
+
+  const topLine = bc.box.thin.conn.l +
+    gridLayout.map( size => repeatChar( size, bc.box.thin.h ) ).join( bc.box.thin.conn.t ) +
+    bc.extras.round.cnr.tr;
+
+  const connIndex = top.length - 1;
+  const connChar = topLine[connIndex] === bc.box.thin.conn.t ? bc.box.thin.conn.c : bc.box.thin.conn.b;
+  const topLineArr = topLine.split( '' );
+  topLineArr.splice( connIndex, 1, connChar );
+
+  console.log( topLineArr.join( '' ) );
   printRow( columnsLabels );
   printHeaderBottom( );
 };
@@ -78,7 +92,6 @@ const printLine = ( label, result, color ) => {
 };
 
 module.exports = fwResult => {
-  printTitle( 'Detailed Breakdown' );
   printHeader();
 
   if ( fwResult.states.beforeAll ) {
@@ -99,7 +112,8 @@ module.exports = fwResult => {
         printEmptyRow();
       }
 
-      printLine( `[Test] "${test.name}"`, test.result, colors.h1 );
+      const retryLabel = test.retries > 0 ? ` (retry ${test.retries})` : '';
+      printLine( `[Test] "${test.name}"${retryLabel}`, test.result, colors.h1 );
 
       test.beforeHooks.forEach( hook => {
         printLine( ` (${hook.type})`, hook.result, colors.before );

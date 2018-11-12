@@ -47,6 +47,11 @@ module.exports = async ( file, timeoutTime, testCtx, testEnv ) => {
     return testState;
   }
 
+  if ( testState.steps.length === 0 ) {
+    testState.flagNil();
+    return testState;
+  }
+
   const beforeHooksOk = await executeHooks( testState.beforeHooks, timeoutTime, testCtx );
 
   if ( beforeHooksOk ) {

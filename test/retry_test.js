@@ -1,3 +1,6 @@
 const IntegrationTestFw = require( '../core/index.js' );
 
-IntegrationTestFw.run( { path: 'retry_test', displaySuccessOutput: true, retries: 1 } );
+IntegrationTestFw.run( {
+  testsDir: 'retry_test',
+  retries: 3
+} );

@@ -1,6 +1,5 @@
 const vars = require( '../utils/console/std_vars' );
-const { printTitle } = require( './tools' );
-const bc = require( '../utils/console/box_chars' );
+const printTitle = require( './print_title' );
 
 const colors = {
   info: vars.fg.blue,
@@ -12,24 +11,30 @@ const colors = {
 const supportedMethods = Object.keys( colors );
 
 const printOutputs = ( runnable, label, superlabel ) => {
+  const err = runnable.result.err;
   const outputs = runnable.outputs
-    .filter( ( { method } ) => supportedMethods.includes( method ) );
+    ? runnable.outputs
+      .filter( ( { method } ) => supportedMethods.includes( method ) )
+    : [];
 
-  if ( outputs.length === 0 ) { return; }
+  if ( outputs.length === 0 && !err ) { return; }
 
   if ( superlabel ) {
     console.log( vars.fg.cyan + vars.dim + superlabel + vars.reset );
   }
   console.log( vars.fg.cyan + label + vars.reset );
-  console.log( ` ${bc.box.thin.v}` );
 
-  outputs.forEach( ( { method, args }, i, arr ) => {
-    const last = i === arr.length - 1;
-    const char = last ? bc.box.thin.cnr.bl : bc.box.thin.conn.l;
-    const spacing = Array( 6 - method.length ).fill( bc.box.thin.h ).join( '' );
-    process.stdout.write( ` ${char}${spacing}${colors[method]}${vars.bright}${method}:${vars.reset} ` );
+  outputs.forEach( ( { method, args } ) => {
+    process.stdout.write( `${colors[method]}${vars.bright}(${method[0]})${vars.reset} ` );
     console.log( ...args );
   } );
+
+  if ( err ) {
+    const parts = err.stack.split('\n');
+    parts[0] = parts[0] + vars.dim;
+    const stack = parts.join('\n')
+    console.log( `${vars.bright}${vars.fg.red}(throw)${vars.reset} ${stack}${vars.reset}` )
+  }
 
   console.log();
 };
@@ -46,7 +51,10 @@ module.exports = fwResult => {
   }
 
   fwResult.states.tests.forEach( test => {
-    const testHeader = `[Test] "${test.name}"`;
+    const retryLabel = test.retries > 0 ? ` (retry ${test.retries})` : '';
+    const testHeader = `[Test] "${test.name}"${retryLabel}`;
+
+    printOutputs( test, testHeader );
 
     test.beforeHooks.concat( test.afterHooks )
       .forEach( hook => printOutputs( hook, `${testHeader} (${hook.type}):` ) );

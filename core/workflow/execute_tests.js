@@ -39,6 +39,7 @@ module.exports = ( fwResults, emitter, fwEnv ) => new Promise( resolve => {
       };
       const testState = await invokeRunner( emitter, args );
 
+      testState.retries = task.retries;
       if ( !testState.ok && task.retries < fwEnv.retries ) {
         task.retries++;
         tasks.push( task );
@@ -47,7 +48,7 @@ module.exports = ( fwResults, emitter, fwEnv ) => new Promise( resolve => {
         Counters.completed++;
       }
 
-      fwResults.states.tests.push( testState );
+      fwResults.addTestState( testState );
       Counters.running--;
     }
   }, 100 );

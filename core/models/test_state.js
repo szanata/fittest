@@ -6,9 +6,11 @@ const Result = require( './result' );
 
 module.exports = {
   init( path ) {
+    let isNil = false;
     const steps = [];
     const hooks = [];
     const additionalStepHooks = [];
+    const hash = Buffer.from( path ).toString('base64');
 
     return {
       get beforeHooks() {
@@ -20,9 +22,19 @@ module.exports = {
       get steps( ) {
         return steps;
       },
+      get hash( ) {
+        return hash;
+      },
+      flagNil() {
+        isNil = true;
+      },
+      get isNil() {
+        return isNil;
+      },
       logs: [],
       name: null,
       err: null,
+      retries: 0,
       get undoSteps( ) {
         return steps.slice().reverse().filter( s => s.main.result.ok ).filter( s => s.undoHook );
       },
@@ -33,11 +45,11 @@ module.exports = {
         return Result.init( { ok, et, err: this.err } );
       },
       addStep( name, fn ) {
-        const hash = genId();
-        const step = Step.init( hash, name, fn );
+        const stepHash = genId();
+        const step = Step.init( stepHash, name, fn );
         steps.push( step );
         additionalStepHooks.forEach( hook => step.hooks.push( hook ) );
-        return hash;
+        return stepHash;
       },
       addHook( type, fn, stepHash ) {
         if ( type === ConditionalHooks.undo ) {
