@@ -5,6 +5,7 @@ const deserializeMap = require( '../utils/object/deserialize_map' );
 const createTestEnv = require( './create_test_env' );
 const consoleSuppressor = require( '../utils/console/suppressor' );
 
+// console.flush = () => {};
 consoleSuppressor.init();
 
 const [ , , args ] = process.argv;

@@ -14,11 +14,11 @@
   },
   "scripts": {
     "lint": "eslint './core' --fix && eslint './test' --fix",
-    "test:unit": "jest --testPathIgnorePatterns=\"/node_modules|base_dir|/test/\" 2>&1",
-    "test:basic": "node ./test/basic_tests.js",
+    "test:unit": "jest --testPathIgnorePatterns=\"/node_modules|test.js|base_dir|/test/\" 2>&1",
+    "test:basic": "node ./test/basic_tests",
     "test:retry": "node ./test/retry_test",
     "test:broken": "node ./test/broken_tests",
-    "test": "npm run test:basic && npm run test:unit && npm run test:retry"
+    "test": "npm run test:basic && npm run test:retry && npm run test:unit"
   },
   "repository": {
     "type": "git",

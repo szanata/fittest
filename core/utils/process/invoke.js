@@ -3,12 +3,10 @@ const genId = require( '../data/gen_id' );
 
 const createHandler = proc => ( { name, args } ) => {
   setTimeout( () => {
-    try {
+    if ( proc.exitCode === null ) {
       proc.send( { name, args } );
-    } catch ( err ) {
-      // swallow this error. This happens when the proc already ended but there is still a message to be sent.
     }
-  }, 3000 );
+  }, 1500 );
 };
 
 module.exports = ( runner, emitter, args ) => {
@@ -22,13 +20,13 @@ module.exports = ( runner, emitter, args ) => {
   emitter.on( listenEvent, handler );
 
   // @DEV
-  proc.stdout.on( 'data', data => {
-    console.log( Buffer.from( data ).toString() );
-  } );
+  // proc.stdout.on( 'data', data => {
+  //   console.log( Buffer.from( data ).toString() );
+  // } );
 
-  proc.stderr.on( 'data', data => {
-    console.error( Buffer.from( data ).toString() );
-  } );
+  // proc.stderr.on( 'data', data => {
+  //   console.error( Buffer.from( data ).toString() );
+  // } );
   // end @DEV
 
   return new Promise( resolve => {

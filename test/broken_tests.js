@@ -1,3 +1,3 @@
-const IntegrationTestFw = require( '../core/index.js' );
+const fittest = require( '../core/index.js' );
 
-IntegrationTestFw.run( { testsDir: 'broken_tests', timeoutTime: 2000 } );
+fittest.run( { testsDir: 'broken_tests', timeoutTime: 2000 } );

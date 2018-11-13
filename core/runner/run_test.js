@@ -1,6 +1,6 @@
 const executeRunnable = require( './execute_runnable' );
 const Fittest = require( '../models/fittest' );
-const TestState = require( '../models/test_state' );
+const Test = require( '../models/test' );
 const TestInterface = require( '../models/test_interface' );
 
 const executeHooks = async ( hooks, timeoutTime, ...args ) => {
@@ -35,31 +35,32 @@ const executeUndoSteps = async ( steps, timeoutTime, ...args ) => {
 };
 
 module.exports = async ( file, timeoutTime, testCtx, testEnv ) => {
-  const testState = TestState.init( file );
-  const testInterface = TestInterface.init( testEnv, testState );
-  const fittest = Fittest.init( testInterface, testState );
+  const test = Test.init( file );
+  const testInterface = TestInterface.init( testEnv, test );
+  const fittest = Fittest.init( testInterface, test );
 
   global.fittest = fittest;
   try {
     require( file ); // eslint-disable-line global-require
   } catch ( err ) {
-    testState.err = err;
-    return testState;
+    test.err = err;
+    return test;
   }
 
-  if ( testState.steps.length === 0 ) {
-    testState.flagNil();
-    return testState;
+  if ( test.steps.length === 0 ) {
+    return test;
   }
 
-  const beforeHooksOk = await executeHooks( testState.beforeHooks, timeoutTime, testCtx );
+  test.invoked = true;
+
+  const beforeHooksOk = await executeHooks( test.beforeHooks, timeoutTime, testCtx );
 
   if ( beforeHooksOk ) {
-    await executeSteps( testState.steps, timeoutTime, testCtx );
-    await executeUndoSteps( testState.undoSteps, timeoutTime, testCtx );
+    await executeSteps( test.steps, timeoutTime, testCtx );
+    await executeUndoSteps( test.undoSteps, timeoutTime, testCtx );
   }
 
-  await executeHooks( testState.afterHooks, timeoutTime, testCtx );
+  await executeHooks( test.afterHooks, timeoutTime, testCtx );
 
-  return testState;
+  return test;
 };

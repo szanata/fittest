@@ -1,16 +1,12 @@
-const Result = require( './result' );
+const Result = require( './test_parts/result' );
 
-const testWasRetryedWithSuccess = ( hash, tests ) => 
+const testWasRetryedWithSuccess = ( hash, tests ) =>
   tests.some( t => t.hash === hash && t.result.ok );
 
 module.exports = {
   init() {
-    const testStates = [];
     return {
       et: 0,
-      addTestState( state ) {
-        testStates.push( state );
-      },
       get ok() {
         return this.testsResult.ok &&
           ( this.states.beforeAll ? this.states.beforeAll.result.ok : true ) &&
@@ -24,9 +20,7 @@ module.exports = {
       },
       states: {
         beforeAll: null,
-        get tests() {
-          return testStates;
-        },
+        tests: [],
         afterAll: null
       }
     };

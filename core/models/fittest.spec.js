@@ -12,12 +12,12 @@ describe( 'fittest Spec', () => {
     expect( () => fittest( 'Hi there!' ) ).toThrow( TypeError );
   } );
 
-  it( 'Should set the test name to the testState', () => {
-    const testState = {};
-    const fittest = Fittest.init( {}, testState );
+  it( 'Should set the test name to the test', () => {
+    const test = {};
+    const fittest = Fittest.init( {}, test );
     const name = 'Hi ther';
     fittest( name, () => {} );
-    expect( testState.name ).toBe( name );
+    expect( test.name ).toBe( name );
   } );
 
   it( 'Should expose the testInterface', () => {

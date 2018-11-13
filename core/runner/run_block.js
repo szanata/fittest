@@ -1,22 +1,22 @@
 const executeRunnable = require( './execute_runnable' );
-const BlockState = require( '../models/block_state' );
-const Result = require( '../models/result' );
+const Block = require( '../models/block' );
+const Result = require( '../models/test_parts/result' );
 const serializeMap = require( '../utils/object/serialize_map' );
 
 module.exports = async ( file, timeoutTime, testCtx, testEnv ) => {
-  const blockState = BlockState.init( file );
+  const block = Block.init( file );
 
   try {
-    blockState.fn = require( file ); // eslint-disable-line global-require
+    block.fn = require( file ); // eslint-disable-line global-require
   } catch ( err ) {
-    blockState.result = Result.init( { et: 0, err } );
+    block.result = Result.init( { et: 0, err } );
   }
 
-  if ( blockState.result.ok ) {
-    await executeRunnable( blockState, timeoutTime, testEnv, testCtx );
+  if ( block.result.ok ) {
+    await executeRunnable( block, timeoutTime, testEnv, testCtx );
   }
 
-  blockState.context = serializeMap( testCtx );
+  block.context = serializeMap( testCtx );
 
-  return blockState;
+  return block;
 };

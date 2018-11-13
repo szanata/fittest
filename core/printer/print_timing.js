@@ -12,14 +12,8 @@ const colors = {
   main: vars.fg.blue
 };
 
-const gridLayout = [ 59, 6, 11 ];
-const columnsLabels = [ 'Function', 'Err', 'Time' ];
-
-// const printGridTop = () => console.log(
-//   bc.extras.round.cnr.tl +
-//   gridLayout.map( size => repeatChar( size, bc.box.thin.h ) ).join( bc.box.thin.conn.t ) +
-//   bc.extras.round.cnr.tr
-// );
+const gridLayout = [ 66, 11 ];
+const columnsLabels = [ 'Feature', 'Time' ];
 
 const printGridBottom = () => console.log(
   bc.extras.round.cnr.bl +
@@ -41,8 +35,8 @@ const printBoldLine = () => console.log(
 
 const printRow = ( info, infoColor = '' ) => {
   const matrix = gridLayout.map( ( len, col ) =>
-    Array( Math.ceil( info[col].length / len ) ).fill().map( ( _, i ) =>
-      info[col].substring( len * i, len * ( i + 1 ) )
+    Array( Math.ceil( info[col].length / (len - 1) ) ).fill().map( ( _, i ) =>
+      info[col].substring( (len - 1) * i, (len - 1) * ( i + 1 ) )
     )
   );
 
@@ -60,9 +54,16 @@ const printRow = ( info, infoColor = '' ) => {
   } );
 };
 
-const printEmptyRow = () => printRow( [ ' ', ' ', ' ' ] );
+const printEmptyRow = () => printRow( [ ' ', ' ' ] );
 
-const colorize = ( ok, color ) => ( ok ? color : vars.fg.red + vars.strikethrough );
+const colorize = ( ok, invoked, color ) => {
+  if ( !ok ) {
+    return vars.fg.red + vars.strikethrough;
+  } else if ( !invoked ) {
+    return vars.dim + vars.fg.white;
+  }
+  return color;
+};
 
 const printHeader = () => {
   const title = 'Detailed timing';
@@ -84,27 +85,34 @@ const printHeader = () => {
   printHeaderBottom( );
 };
 
-const printLine = ( label, result, color ) => {
-  const okInfo = result.ok ? '' : ' X ';
+const printResult = ( label, result, color ) => {
   const etInfo = `${msToS( result.et )}s`;
-  const fmt = colorize( result.ok, color );
-  printRow( [ label, okInfo, etInfo ], fmt );
+  const fmt = colorize( result.ok, true, color );
+  printRow( [ label, etInfo ], fmt );
+}
+
+const printRunnable = ( label, runnable, color ) => {
+  const { result, invoked } = runnable;
+  const etInfo = invoked ? `${msToS( result.et )}s` : '-';
+  const fmt = colorize( result.ok, invoked, color );
+  const text = label + (!invoked && result.ok ? ' *not invoked' : '');
+  printRow( [ text, etInfo ], fmt );
 };
 
 module.exports = fwResult => {
   printHeader();
 
   if ( fwResult.states.beforeAll ) {
-    printLine( '[Block] beforeAll', fwResult.states.beforeAll.result, colors.before );
+    printRunnable( '[Block] beforeAll', fwResult.states.beforeAll, colors.before );
   }
 
   if ( fwResult.states.afterAll ) {
-    printLine( '[Block] afterAll', fwResult.states.afterAll.result, colors.after );
+    printRunnable( '[Block] afterAll', fwResult.states.afterAll, colors.after );
   }
 
   const testsCount = fwResult.states.tests.length;
   if ( testsCount > 0 ) {
-    printLine( `[Tests] ${testsCount} in total`, fwResult.testsResult, colors.h2 );
+    printResult( `[Tests] ${testsCount} in total`, fwResult.testsResult, colors.h2 );
     printBoldLine();
 
     fwResult.states.tests.forEach( ( test, testI ) => {
@@ -113,31 +121,31 @@ module.exports = fwResult => {
       }
 
       const retryLabel = test.retries > 0 ? ` (retry ${test.retries})` : '';
-      printLine( `[Test] "${test.name}"${retryLabel}`, test.result, colors.h1 );
+      printRunnable( `[Test] "${test.name}"${retryLabel}`, test, colors.h1 );
 
       test.beforeHooks.forEach( hook => {
-        printLine( ` (${hook.type})`, hook.result, colors.before );
+        printRunnable( ` (${hook.type})`, hook, colors.before );
       } );
 
       test.afterHooks.forEach( hook => {
-        printLine( ` (${hook.type})`, hook.result, colors.after );
+        printRunnable( ` (${hook.type})`, hook, colors.after );
       } );
 
       test.steps.forEach( step => {
-        printLine( ` [Step] "${step.name}"`, step.result, colors.h2 );
+        printRunnable( ` [Step] "${step.name}"`, step, colors.h2 );
 
         step.beforeHooks.forEach( hook => {
-          printLine( `  (${hook.type})`, hook.result, colors.before );
+          printRunnable( `  (${hook.type})`, hook, colors.before );
         } );
 
         step.afterHooks.forEach( hook => {
-          printLine( `  (${hook.type})`, hook.result, colors.after );
+          printRunnable( `  (${hook.type})`, hook, colors.after );
         } );
 
-        printLine( '  (main)', step.main.result, colors.main );
+        printRunnable( '  (main)', step.main, colors.main );
 
         if ( step.undoHook ) {
-          printLine( `  (${step.undoHook.type})`, step.undoHook.result, colors.undo );
+          printRunnable( `  (${step.undoHook.type})`, step.undoHook, colors.undo );
         }
       } );
 

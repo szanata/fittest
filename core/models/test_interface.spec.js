@@ -31,12 +31,12 @@ describe( 'Test Interface Spec', () => {
       expect( () => testInterface.after() ).toThrow( TypeError );
     } );
 
-    it( 'Should add a hook to the testState when calling that hook', () => {
-      const testState = { addHook: jest.fn() };
-      const testInterface = TestInterface.init( {}, testState );
+    it( 'Should add a hook to the test when calling that hook', () => {
+      const test = { addHook: jest.fn() };
+      const testInterface = TestInterface.init( {}, test );
       const fn = () => {};
       testInterface.after( fn );
-      expect( testState.addHook ).toHaveBeenCalledWith( 'after', fn );
+      expect( test.addHook ).toHaveBeenCalledWith( 'after', fn );
     } );
   } );
 
@@ -47,31 +47,31 @@ describe( 'Test Interface Spec', () => {
     } );
 
     it( 'Should create a step', () => {
-      const testState = { addStep: jest.fn() };
-      const testInterface = TestInterface.init( {}, testState );
+      const test = { addStep: jest.fn() };
+      const testInterface = TestInterface.init( {}, test );
       const name = 'Foo';
       const fn = () => {};
 
       testInterface.step( name, fn );
-      expect( testState.addStep ).toHaveBeenCalledWith( name, fn );
+      expect( test.addStep ).toHaveBeenCalledWith( name, fn );
     } );
 
     it( 'Should create a undo step', () => {
       const hash = randomBytes( 12 ).toString( 'hex' );
-      const testState = {
+      const test = {
         addStep: jest.fn(),
         addHook: jest.fn()
       };
-      testState.addStep.mockReturnValue( hash );
+      test.addStep.mockReturnValue( hash );
 
-      const testInterface = TestInterface.init( {}, testState );
+      const testInterface = TestInterface.init( {}, test );
 
       const name = 'Foo';
       const fn = () => 'foo';
       const undoFn = () => 'bar';
       testInterface.step( name, fn ).undo( undoFn );
 
-      expect( testState.addHook ).toHaveBeenCalledWith( 'undo', undoFn, hash );
+      expect( test.addHook ).toHaveBeenCalledWith( 'undo', undoFn, hash );
     } );
 
     it( 'Should validate the first step argument as string', () => {

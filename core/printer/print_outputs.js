@@ -8,14 +8,17 @@ const colors = {
   error: vars.fg.red
 };
 
+const filterInnerFrames = stack => 
+  stack.split('\n').filter( p => !p.includes( '/fittest/core' ) ).join('\n');
+
 const supportedMethods = Object.keys( colors );
 
 const printOutputs = ( runnable, label, superlabel ) => {
   const err = runnable.result.err;
-  const outputs = runnable.outputs
-    ? runnable.outputs
-      .filter( ( { method } ) => supportedMethods.includes( method ) )
-    : [];
+  const outputs = runnable.outputs ?
+    runnable.outputs
+      .filter( ( { method } ) => supportedMethods.includes( method ) ) :
+    [];
 
   if ( outputs.length === 0 && !err ) { return; }
 
@@ -30,10 +33,10 @@ const printOutputs = ( runnable, label, superlabel ) => {
   } );
 
   if ( err ) {
-    const parts = err.stack.split('\n');
+    const parts = filterInnerFrames( err.stack ).split( '\n' );
     parts[0] = parts[0] + vars.dim;
-    const stack = parts.join('\n')
-    console.log( `${vars.bright}${vars.fg.red}(throw)${vars.reset} ${stack}${vars.reset}` )
+    const stack = parts.join( '\n' );
+    console.log( `${vars.bright}${vars.fg.red}(throw)${vars.reset} ${stack}${vars.reset}` );
   }
 
   console.log();

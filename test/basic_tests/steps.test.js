@@ -1,6 +1,6 @@
 const sleep = t => new Promise( r => setTimeout( () => r(), t ) );
 
-fittest( 'Phases sequence test', test => {
+fittest( 'Steps sequence test', test => {
 
   test.before( async () => {
     await sleep( 30 );

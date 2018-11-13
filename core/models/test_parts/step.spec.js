@@ -1,7 +1,7 @@
-const Hook = require( './test_hook' );
-const Step = require( './test_step' );
+const Hook = require( './hook' );
+const Step = require( './step' );
 const Result = require( './result' );
-const { SerialHooks } = require( './types' );
+const { SerialHooks } = require( '../types' );
 
 describe( 'Test Step Spec', () => {
   it( 'Should create a step with hash, name and main fn', () => {

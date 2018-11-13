@@ -1,5 +1,10 @@
+const defaults = {
+  et: 0,
+  ok: true,
+  err: null
+};
 module.exports = {
-  init( { et = 0, ok = true, err = null } = {} ) {
+  init( { et, ok, err } = defaults ) {
     let okState = ok;
     return {
       get ok() {

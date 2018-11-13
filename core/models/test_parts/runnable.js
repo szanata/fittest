@@ -6,10 +6,12 @@ module.exports = {
       fn,
       outputs: [],
       result: Result.init(),
+      invoked: false,
       serialize() {
         return {
           outputs: this.outputs,
-          result: this.result.serialize()
+          result: this.result.serialize(),
+          invoked: this.invoked
         };
       }
     };

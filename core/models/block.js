@@ -1,4 +1,4 @@
-const Runnable = require( './runnable' );
+const Runnable = require( './test_parts/runnable' );
 
 module.exports = {
   init( fn ) {

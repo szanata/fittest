@@ -1,4 +1,4 @@
-const Hook = require( './test_hook' );
+const Hook = require( './hook' );
 const Result = require( './result' );
 
 describe( 'Test Hook spec', () => {

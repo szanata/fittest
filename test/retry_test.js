@@ -1,6 +1,6 @@
-const IntegrationTestFw = require( '../core/index.js' );
+const fittest = require( '../core/index.js' );
 
-IntegrationTestFw.run( {
+fittest.run( {
   testsDir: 'retry_test',
   retries: 3
 } );

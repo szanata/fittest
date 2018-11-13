@@ -1,16 +1,15 @@
 const genId = require( '../utils/data/gen_id' );
-const Hook = require( './test_hook' );
-const Step = require( './test_step' );
+const Hook = require( './test_parts/hook' );
+const Step = require( './test_parts/step' );
+const Result = require( './test_parts/result' );
 const { SimpleHooks, SerialHooks, ConditionalHooks } = require( './types' );
-const Result = require( './result' );
 
 module.exports = {
   init( path ) {
-    let isNil = false;
     const steps = [];
     const hooks = [];
     const additionalStepHooks = [];
-    const hash = Buffer.from( path ).toString('base64');
+    const hash = Buffer.from( path ).toString( 'base64' );
 
     return {
       get beforeHooks() {
@@ -25,23 +24,25 @@ module.exports = {
       get hash( ) {
         return hash;
       },
-      flagNil() {
-        isNil = true;
-      },
-      get isNil() {
-        return isNil;
-      },
+      invoked: false,
       logs: [],
       name: null,
       err: null,
       retries: 0,
       get undoSteps( ) {
-        return steps.slice().reverse().filter( s => s.main.result.ok ).filter( s => s.undoHook );
+        return steps.slice().reverse()
+          .filter( s => s.main.invoked )
+          .filter( s => s.main.result.ok )
+          .filter( s => s.undoHook );
       },
       get result() {
-        const ok = !this.err && hooks.every( h => h.result.ok ) && steps.every( s => s.result.ok );
-        const et = hooks.reduce( ( sum, hook ) => sum + hook.result.et, 0 ) +
-          steps.reduce( ( sum, step ) => sum + step.result.et, 0 );
+        const ok = !this.err && hooks.concat( steps )
+          .every( r => r.result.ok );
+
+        const et = hooks.concat( steps )
+          .filter( r => r.invoked )
+          .reduce( ( sum, r ) => r.result.et + sum, 0 );
+
         return Result.init( { ok, et, err: this.err } );
       },
       addStep( name, fn ) {
@@ -68,8 +69,9 @@ module.exports = {
       serialize( ) {
         return {
           path,
-          name: this.name,
+          name: this.name || path,
           logs: this.logs,
+          invoked: this.invoked,
           steps: steps.map( s => s.serialize() ),
           beforeHooks: this.beforeHooks.map( h => h.serialize() ),
           afterHooks: this.afterHooks.map( h => h.serialize() ),

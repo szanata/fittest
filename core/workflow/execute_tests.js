@@ -37,10 +37,10 @@ module.exports = ( fwResults, emitter, fwEnv ) => new Promise( resolve => {
         filePath: task.testPath,
         fwEnv
       };
-      const testState = await invokeRunner( emitter, args );
+      const test = await invokeRunner( emitter, args );
 
-      testState.retries = task.retries;
-      if ( !testState.ok && task.retries < fwEnv.retries ) {
+      test.retries = task.retries;
+      if ( !test.result.ok && task.retries < fwEnv.retries ) {
         task.retries++;
         tasks.push( task );
       } else {
@@ -48,7 +48,7 @@ module.exports = ( fwResults, emitter, fwEnv ) => new Promise( resolve => {
         Counters.completed++;
       }
 
-      fwResults.addTestState( testState );
+      fwResults.states.tests.push( test );
       Counters.running--;
     }
   }, 100 );

@@ -1,7 +1,8 @@
-const IntegrationTestFw = require( '../core/index.js' );
+const fittest = require( '../core/index.js' );
 
-IntegrationTestFw.run( {
+fittest.run( {
   beforeAll: 'basic_tests/before_all',
   testsDir: 'basic_tests',
-  afterAll: 'basic_tests/after_all'
+  afterAll: 'basic_tests/after_all',
+  timeoutTime: 10000
 } );

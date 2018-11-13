@@ -1,5 +1,5 @@
 const Result = require( './result' );
-const { SerialHooks, ConditionalHooks } = require( './types' );
+const { SerialHooks, ConditionalHooks } = require( '../types' );
 const Runnable = require( './runnable' );
 
 module.exports = {
@@ -18,6 +18,9 @@ module.exports = {
       get undoHook( ) {
         return this.hooks.find( h => h.type === ConditionalHooks.undo );
       },
+      get invoked( ) {
+        return this.main.invoked;
+      },
       get result( ) {
         const et = this.hooks.reduce( ( s, hook ) => hook.result.et + s, 0 ) +
           this.main.result.et;
@@ -29,6 +32,7 @@ module.exports = {
           name: this.name,
           main: this.main.serialize(),
           result: this.result.serialize(),
+          invoked: this.invoked,
           beforeHooks: this.beforeHooks.map( h => h.serialize() ),
           afterHooks: this.afterHooks.map( h => h.serialize() ),
           undoHook: this.undoHook ? this.undoHook.serialize() : null,
