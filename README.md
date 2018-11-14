@@ -7,13 +7,23 @@
 
 - Create, organize and run complex multi step integration test scripts
 - Use maximum parallelism and process isolation
-- Use webhooks to test your services on a public url each test spin
-- Use your favorite assertion library
+- Use webhooks to test your services on a public url each test spins
+- Write tests your way, this is just a shell
+- Use your favorite libraries to assert code, make http request, etc
 - Get detailed breakdown of each step timing
+- Coming soon: Get detailed timing on each http request
+
+## Table of content
+
+- [Setup](#setup)
+- [Anatomy of a test](#anatomy-of-a-test)
+- [Options](#options)
+- [Tests path](#tests-path)
+- [Blocks](#blocks)
 
 ## Setup
 
-### 1. Download and install the project
+### 1. Download and install the project from NPM
 
 ```
 npm install fittest
@@ -44,7 +54,7 @@ project
 
 ### 4. Create some tests
 
-Each of your tests will look something like this:
+You can have any amount of tests, and each of them will look something like this:
 
 ```js
 fittest( 'Your test name', test => {
@@ -65,13 +75,13 @@ fittest( 'Your test name', test => {
 });
 ```
 
-## Test anatomy
+## Anatomy of a test
 
-Every test consist of *n* steps (`step`), where each of those will run synchronously.
+Every test consist of *n* steps (`step`), which will run synchronously.
 
-After all steps run, each `step.undo` will run in a reverse order.
+After all steps are executed, their rollbacks `step.undo` will run in a reverse order.
 
-The tests can have hooks: *before*, *beforeEach*, *after*, *afterEach*.
+Also, tests can have hooks: *before*, *beforeEach*, *after*, *afterEach*.
 
 `before` and `after` will run before and after all the steps, respectively.
 
@@ -85,11 +95,11 @@ It's a js `Map` like object, but unfortunately there are some restrictions using
 
 ### *fittest* Function
 
-TBD;
+`fittest()` function is a global variable used to create a new test, it receive two arguments, the test name, and a function with the actual tests.
 
 ### *test* Object
 
-The test object, received in the callback function of the `fittest` global fn provides all the tools to run tests.
+The test object, received in the callback function of the `fittest` global fn provides all the tools to create a test.
 
 It provide the methods to create steps and hooks, and also the tools to use the webhooks:
 
@@ -110,11 +120,55 @@ Methods:
 
 #### *.step()* usage:
 
+This is the most basic tool to write a test. Conceptually a spet is a atomic operation which should be accomplished as a part of a test itselft. Eg: On a test of a CRUD, a step is a POST, a PUT, a GET or a DELETE.
 
-TDB;
+It receives two arguments, the name of the step, and a function with the actual code to be run. It will return `step Object` which have just one method `.undo()`, which receives a function with the code to undo this step (if needed). Wherever any step throws errors or not, each *undo* from previous steps will be invoked in the reverse order.
 
+The steps and their rollbacks will resolve synchronously and in order of declaration, as the following examples:
 
-##### *.env.asyncEvent()* usage:
+##### Example with errors
+
+Given a test wich declared 6 steps:
+
+```js
+test.step('1', () => {} ).undo( () => {});
+test.step('2', () => {} ).undo( () => {});
+test.step('3', () => {} ).undo( () => {});
+test.step('4', () => {} );
+test.step('5', () => { throw new Error() } ).undo( () => {});
+test.step('6', () => {} ).undo( () => {});
+```
+
+These will run as following:
+
+1. Step 1
+2. Step 2
+3. Step 3
+4. Step 4
+5. Step 5: Error! (Stop here and never invoke the next step)
+6. Skip "undo Step 4" as it does not have a `undo` hook
+7. Undo Step 3
+8. Undo Step 2
+9. Undo Step 1
+
+##### Example without errors
+
+```js
+test.step('1', () => {} ).undo( () => {});
+test.step('2', () => {} ).undo( () => {});
+test.step('3', () => {} ).undo( () => {});
+```
+
+These will run as following:
+
+1. Step 1
+2. Step 2
+3. Step 3
+4. Undo Step 3
+5. Undo Step 2
+6. Undo Step 1
+
+#### *.env.asyncEvent()* usage:
 
 .asyncEvent is used to await to a specific async event from *fittest* to happen. It always returns a promise.
 
@@ -122,7 +176,7 @@ TDB;
 
 | Name | Type | Description |
 | -------- | ---- | ----------- |
-| eventName | string | Event name to await. Possible: `http-get`, `http-post` |
+| eventName | string | Event name to await. Possible events: `http-get`, `http-post` |
 | threshold | number | Max time in milliseconds to await for this event to happen, throws an Error if the event doest no happen. Default: one minute |
 
 Events results:
@@ -158,12 +212,28 @@ axios.get( env.serverUrl );
 const response = await env.asyncEvent( 'http-get' );
 ```
 
-### Tests path
+## Options
 
-FIT reads the tests recursively, looking for:
-- Any `index.js` file inside a folder that ends with `_test`;
-- Any file that ends with `.test.js`;
-- A single file, if the `path` option points to that file.
+Configurations send to `.run()` method.
+
+| Property | Type | Required | Default | Description |
+| -------- | ---- | -------- | ------- | ---------- |
+| testsDir | string | **yes** | *none* | The directory where the tests will be read from. |
+| timeoutTime | string | | 5 minutes | The time in milliseconds to wait before a test is killed due timeout. |
+| retries | number | | 0 | Number of retries to perform on each test that fails. |
+| beforeAll | string | | *none* | Path to a script file to run before the tests |
+| afterAll | string | | *none* | Path to a script file to run after the tests |
+
+
+## Tests path
+
+The tests path (`testsDir` options) is where your tests are located, this can be either a folder or a single `.js` file. The configuration follow these rules:
+
+- If a folder is provided, it will read it recursivelly searching for:
+  - Any `index.js` filde inside a directory that ends with `_test` in its name. Eg.: `foo_tests/index.js`
+  - Any file which the name ends in `.test.js`. Eg.: `my_super_awesome.test.js`
+- If a single file path is provided, it will read as a test (If it is a `.js` file)
+- Otherwise it will throw a error
 
 Examples:
 
@@ -197,19 +267,7 @@ project
     |-- foo.test.js // not called
 ```
 
-### Options
-
-Configurations send to `.run()` method.
-
-| Property | Type | Required | Default | Description |
-| -------- | ---- | -------- | ------- | ---------- |
-| testsDir | string | **yes** | *none* | The directory where the tests will be read from. |
-| timeoutTime | string | | 5 minutes | The time in milliseconds to wait before a test is killed due timeout. |
-| retries | number | | 0 | Number of retries to perform on each test that fails. |
-| beforeAll | string | | *none* | Path to a script file to run before the tests |
-| afterAll | string | | *none* | Path to a script file to run after the tests |
-
-### Blocks
+## Blocks
 
 Blocks are script files that will run before or after the tests. They must be files that exports a function.
 
