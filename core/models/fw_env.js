@@ -12,7 +12,7 @@ module.exports = {
           ( this.blockPaths.beforeAll ? 1 : 0 ) +
           ( this.blockPaths.afterAll ? 1 : 0 );
       },
-      displaySuccessOutput: false,
+      version: '',
       timeoutTime: 300000,
       relativeDir: null,
       retries: 0
