@@ -3,7 +3,7 @@ const supressedMethods = [ 'log', 'error', 'warn', 'info', 'trace' ];
 module.exports = {
   init() {
     const messages = [];
-    global.console = new Proxy( console, {
+    const consoleProxy = new Proxy( console, {
       get( target, prop ) {
         if ( supressedMethods.includes( prop ) ) {
           return ( ...args ) => {
@@ -16,5 +16,13 @@ module.exports = {
         return target[prop];
       }
     } );
+
+    // This method works on older nodes too, like 8.x, where the global.console
+    // is only a getter
+    delete global.console;
+
+    Reflect.defineProperty( global, 'console', {
+      value: consoleProxy 
+    });
   }
 };
