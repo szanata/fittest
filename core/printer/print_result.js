@@ -4,6 +4,8 @@ const repeatChar = require( '../utils/console/print/repeat_char' );
 const toHuman = require( '../utils/time/to_human' );
 
 module.exports = fwResults => {
+  console.log();
+  
   const info = [];
 
   info.push( `Tests: ${fwResults.states.tests.length}` );

@@ -2,7 +2,6 @@ const getTestsPaths = require( './get_tests_paths' );
 const FwEnv = require( '../models/fw_env' );
 const { BlockTypes } = require( '../models/types' );
 const runValidations = require( './run_validations' );
-const readFwVersion = require( './read_fw_version' );
 
 /*
 userOpts:
@@ -29,7 +28,10 @@ module.exports = {
 
     fwEnv.testsPaths = getTestsPaths( relativeDir, userOpts.testsDir );
 
-    fwEnv.version = readFwVersion();
+    if ( fwEnv.testsPaths.length === 0 ) {
+      console.log( 'Sorry. No tests found. Bye ;)' );
+      process.exit( 0 );
+    }
 
     blocksOptions.filter( b => userOpts[b] ).forEach( b => {
       fwEnv.blockPaths[b] = getTestsPaths( relativeDir, userOpts[b] )[0];

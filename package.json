@@ -15,7 +15,9 @@
     "lint": "eslint './core' --fix && eslint './test' --fix",
     "test:unit": "jest --testPathIgnorePatterns=\"/node_modules|test.js|base_dir|/test/\" 2>&1",
     "test:basic": "node ./test/basic_tests",
-    "test:retry": "node ./test/retry_test",
+    "test:retry": "node ./test/retry_tests",
+    "test:no_tests": "node ./test/no_tests_test",
+    "test:invalid_block": "node ./test/invalid_block_tests",
     "test:broken": "node ./test/broken_tests",
     "test": "npm run test:basic && npm run test:retry && npm run test:unit"
   },
