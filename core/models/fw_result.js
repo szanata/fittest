@@ -6,7 +6,11 @@ const testWasRetryedWithSuccess = ( hash, tests ) =>
 module.exports = {
   init() {
     return {
-      et: 0,
+      get et() {
+        return this.states.tests.reduce( ( s, test ) => s + test.result.et, 0 )
+          + ( this.states.beforeAll ? this.states.beforeAll.result.et : 0 )
+          + ( this.states.afterAll ? this.states.afterAll.result.et : 0 );
+      },
       get ok() {
         return this.testsResult.ok &&
           ( this.states.beforeAll ? this.states.beforeAll.result.ok : true ) &&

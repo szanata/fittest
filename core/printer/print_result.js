@@ -4,12 +4,11 @@ const repeatChar = require( '../utils/console/print/repeat_char' );
 const toHuman = require( '../utils/time/to_human' );
 
 module.exports = fwResults => {
-  const result = fwResults.testsResult;
   const info = [];
 
   info.push( `Tests: ${fwResults.states.tests.length}` );
-  info.push( `Total time: ${toHuman( result.et )}` );
-  info.push( `Result: ${result.ok ? 'passed' : 'broken'}` );
+  info.push( `Total time: ${toHuman( fwResults.et )}` );
+  info.push( `Result: ${fwResults.ok ? 'passed' : 'broken'}` );
 
   const length = info.slice().sort( ( a, b ) => b.length - a.length )[0].length + 4;
   const bar = repeatChar( length - 2, bc.box.thin.h );

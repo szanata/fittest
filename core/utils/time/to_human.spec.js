@@ -5,4 +5,9 @@ describe( 'To Human Spec', () => {
     const time = 34973474;
     expect( toHuman( time ) ).toBe( '9h42m53s474ms' );
   } );
+
+  it( 'Should format 0 time', () => {
+    const time = 0;
+    expect( toHuman( time ) ).toBe( '0ms' );
+  } );
 } );
