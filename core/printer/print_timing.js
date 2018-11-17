@@ -35,8 +35,8 @@ const printBoldLine = () => console.log(
 
 const printRow = ( info, infoColor = '' ) => {
   const matrix = gridLayout.map( ( len, col ) =>
-    Array( Math.ceil( info[col].length / (len - 1) ) ).fill().map( ( _, i ) =>
-      info[col].substring( (len - 1) * i, (len - 1) * ( i + 1 ) )
+    Array( Math.ceil( info[col].length / ( len - 1 ) ) ).fill().map( ( _, i ) =>
+      info[col].substring( ( len - 1 ) * i, ( len - 1 ) * ( i + 1 ) )
     )
   );
 
@@ -89,13 +89,13 @@ const printResult = ( label, result, color ) => {
   const etInfo = `${msToS( result.et )}s`;
   const fmt = colorize( result.ok, true, color );
   printRow( [ label, etInfo ], fmt );
-}
+};
 
 const printRunnable = ( label, runnable, color ) => {
   const { result, invoked } = runnable;
   const etInfo = invoked ? `${msToS( result.et )}s` : '-';
   const fmt = colorize( result.ok, invoked, color );
-  const text = label + (!invoked && result.ok ? ' *not invoked' : '');
+  const text = label + ( !invoked && result.ok ? ' *not invoked' : '' );
   printRow( [ text, etInfo ], fmt );
 };
 

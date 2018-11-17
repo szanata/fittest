@@ -4,12 +4,12 @@ const { execute } = require( './workflow' );
 const EventEmitter = require( 'events' );
 const Printer = require( './printer' );
 const getStackFrameDir = require( './utils/stack/get_stack_frame_dir' );
-const package = require( '../package.json' );
+const pack = require( '../package.json' );
 
 module.exports = {
   async run( params ) {
     try {
-      Printer.header( package );
+      Printer.header( pack );
 
       const relativeDir = getStackFrameDir( 3 );
       const emitter = new EventEmitter();

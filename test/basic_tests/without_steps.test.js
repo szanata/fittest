@@ -1,5 +1,5 @@
 fittest( 'Test without any steps', test => {
-  test.before( () => {});
+  test.before( () => {} );
 
-  test.afterEach( () => {});
+  test.afterEach( () => {} );
 } );

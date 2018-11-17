@@ -7,7 +7,7 @@ module.exports = ms => Object
   } ).reduce( ( obj, t, i, arr ) => {
     const time = Math.floor( obj.rest / t[1] );
     obj.rest = obj.rest % t[1];
-    if ( time > 0 || i === (arr.length - 1) ) {
+    if ( time > 0 || i === ( arr.length - 1 ) ) {
       obj.f = obj.f + `${time}${t[0]}`;
     }
     return obj;

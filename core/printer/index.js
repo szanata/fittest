@@ -6,8 +6,8 @@ const printResult = require( './print_result' );
 const printHeader = require( './print_header' );
 
 module.exports = {
-  header( package ) {
-    printHeader( package );
+  header( pack ) {
+    printHeader( pack );
   },
   result( fwResult ) {
     printResult( fwResult );

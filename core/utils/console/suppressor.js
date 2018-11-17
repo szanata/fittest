@@ -22,7 +22,7 @@ module.exports = {
     delete global.console;
 
     Reflect.defineProperty( global, 'console', {
-      value: consoleProxy 
-    });
+      value: consoleProxy
+    } );
   }
 };

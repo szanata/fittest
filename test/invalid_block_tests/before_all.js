@@ -1,6 +1,6 @@
 const axios = require( 'axios' );
 
-module.exports = async ( env, ctx ) => {
+module.exports = async ( ) => {
   await axios.get( 'https://google.com' );
   await axios.get( 'https://github.com' );
 };

@@ -1,3 +1,3 @@
 fittest( 'Dummy test', test => {
-  test.step( 'Dummy step', () => { })
-});
+  test.step( 'Dummy step', () => { } );
+} );

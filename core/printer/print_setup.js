@@ -6,7 +6,6 @@ const msToS = require( '../utils/time/ms_to_s' );
 module.exports = fwEnv => {
 
   const info = [];
-  info.push( `Version: ${fwEnv.version}` );
   info.push( `Tests: ${fwEnv.testsPaths.length}` );
   if ( fwEnv.blockPaths.beforeAll ) {
     info.push( 'Before All Block: true' );
@@ -16,7 +15,7 @@ module.exports = fwEnv => {
   }
 
   info.push( `Timeout: ${msToS( fwEnv.timeoutTime )}s` );
-  info.push( `Directory: ${fwEnv.relativeDir}` );
+  info.push( `Root Path: ${fwEnv.relativeDir}` );
   info.push( `Retries: ${fwEnv.retries}` );
 
   const length = info.slice().sort( ( a, b ) => b.length - a.length )[0].length + 4;

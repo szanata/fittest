@@ -28,10 +28,8 @@ const executeSteps = async ( steps, timeoutTime, ...args ) => {
 
 const executeUndoSteps = async ( steps, timeoutTime, ...args ) => {
   for ( const step of steps ) {
-    const ok = await executeRunnable( step.undoHook, timeoutTime, ...args );
-    if ( !ok ) { return false; }
+    await executeRunnable( step.undoHook, timeoutTime, ...args );
   }
-  return true;
 };
 
 module.exports = async ( file, timeoutTime, testCtx, testEnv ) => {

@@ -8,8 +8,8 @@ const colors = {
   error: vars.fg.red
 };
 
-const filterInnerFrames = stack => 
-  stack.split('\n').filter( p => !p.includes( '/fittest/core' ) ).join('\n');
+const filterInnerFrames = stack =>
+  stack.split( '\n' ).filter( p => !p.includes( '/fittest/core' ) ).join( '\n' );
 
 const supportedMethods = Object.keys( colors );
 
