@@ -15,6 +15,7 @@ module.exports = fwEnv => {
   }
 
   info.push( `Timeout: ${msToS( fwEnv.timeoutTime )}s` );
+  info.push( `Event Timeout: ${msToS( fwEnv.eventTimeoutTime )}s` );
   info.push( `Root Path: ${fwEnv.relativeDir}` );
   info.push( `Retries: ${fwEnv.retries}` );
 

@@ -12,8 +12,8 @@ module.exports = {
           ( this.blockPaths.beforeAll ? 1 : 0 ) +
           ( this.blockPaths.afterAll ? 1 : 0 );
       },
-      version: '',
       timeoutTime: 300000,
+      eventTimeoutTime: 60000,
       relativeDir: null,
       retries: 0
     };

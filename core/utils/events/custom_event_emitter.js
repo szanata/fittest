@@ -1,5 +1,3 @@
-const oneMinute = 60000;
-
 const eventWasEmitted = ( events, name ) => events.filter( ev => ev[0] === name ).length > 0;
 
 const consumeEvent = ( events, name ) => {
@@ -21,7 +19,7 @@ module.exports = {
         events.push( [ event, data ] );
       },
 
-      async once( name, threshold = oneMinute ) {
+      async once( name, threshold = 60000 ) {
         return new Promise( ( resolve, reject ) => {
           const timeout = setTimeout( () => {
             clearInterval( eventDetection );
