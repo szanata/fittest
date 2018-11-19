@@ -13,7 +13,7 @@ const filterInnerFrames = stack =>
 
 const supportedMethods = Object.keys( colors );
 
-const printOutputs = ( runnable, label, superlabel ) => {
+const printOutputs = ( buffer, runnable, label, superlabel ) => {
   const err = runnable.result.err;
   const outputs = runnable.outputs ?
     runnable.outputs
@@ -23,57 +23,59 @@ const printOutputs = ( runnable, label, superlabel ) => {
   if ( outputs.length === 0 && !err ) { return; }
 
   if ( superlabel ) {
-    console.log( vars.fg.cyan + vars.dim + superlabel + vars.reset );
+    buffer.push( [ vars.fg.cyan + vars.dim + superlabel + vars.reset ] );
   }
-  console.log( vars.fg.cyan + label + vars.reset );
+  buffer.push( [ vars.fg.cyan + label + vars.reset ] );
 
   outputs.forEach( ( { method, args } ) => {
-    process.stdout.write( `${colors[method]}${vars.bright}(${method[0]})${vars.reset} ` );
-    console.log( ...args );
+    buffer.push( [ `${colors[method]}${vars.bright}(${method[0]})${vars.reset}`, ...args ] );
   } );
 
   if ( err ) {
     const parts = filterInnerFrames( err.stack ).split( '\n' );
     parts[0] = parts[0] + vars.dim;
     const stack = parts.join( '\n' );
-    console.log( `${vars.bright}${vars.fg.red}(throw)${vars.reset} ${stack}${vars.reset}` );
+    buffer.push( [ `${vars.bright}${vars.fg.red}(throw)${vars.reset} ${stack}${vars.reset}` ] );
   }
 
-  console.log();
+  buffer.push( [ '' ] );
 };
 module.exports = fwResult => {
-
-  printTitle( 'Outputs' );
+  const buffer = [];
 
   if ( fwResult.states.beforeAll ) {
-    printOutputs( fwResult.states.beforeAll, '[Block] beforeAll' );
+    printOutputs( buffer, fwResult.states.beforeAll, '[Block] beforeAll' );
   }
 
   if ( fwResult.states.afterAll ) {
-    printOutputs( fwResult.states.afterAll, '[Block] afterAll' );
+    printOutputs( buffer, fwResult.states.afterAll, '[Block] afterAll' );
   }
 
   fwResult.states.tests.forEach( test => {
     const retryLabel = test.retries > 0 ? ` (retry ${test.retries})` : '';
     const testHeader = `[Test] "${test.name}"${retryLabel}`;
 
-    printOutputs( test, testHeader );
+    printOutputs( buffer, test, testHeader );
 
     test.beforeHooks.concat( test.afterHooks )
-      .forEach( hook => printOutputs( hook, `${testHeader} (${hook.type}):` ) );
+      .forEach( hook => printOutputs( buffer, hook, `${testHeader} (${hook.type}):` ) );
 
     test.steps.forEach( step => {
       const stepHeader = `[Step] "${step.name}"`;
 
       step.beforeHooks.concat( step.afterHooks )
-        .forEach( hook => printOutputs( hook, `${stepHeader} (${hook.type}):`, testHeader ) );
+        .forEach( hook => printOutputs( buffer, hook, `${stepHeader} (${hook.type}):`, testHeader ) );
 
-      printOutputs( step.main, `${stepHeader} (main):`, testHeader );
+      printOutputs( buffer, step.main, `${stepHeader} (main):`, testHeader );
       if ( step.undoHook ) {
-        printOutputs( step.undoHook, `${stepHeader} (${step.undoHook.type}):`, testHeader );
+        printOutputs( buffer, step.undoHook, `${stepHeader} (${step.undoHook.type}):`, testHeader );
       }
     } );
   } );
 
-  console.log();
+  if ( buffer.length > 0 ) {
+    printTitle( 'Outputs' );
+    buffer.forEach( args => console.log( ...args ) );
+    console.log();
+  }
 };

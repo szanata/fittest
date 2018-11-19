@@ -69,6 +69,7 @@ module.exports = {
       serialize( ) {
         return {
           path,
+          hash: this.hash,
           name: this.name || path,
           logs: this.logs,
           invoked: this.invoked,
