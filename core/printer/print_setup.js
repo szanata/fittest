@@ -2,10 +2,12 @@ const padBetween = require( '../utils/console/print/pad_between' );
 const bc = require( '../utils/console/box_chars' );
 const repeatChar = require( '../utils/console/print/repeat_char' );
 const msToS = require( '../utils/time/ms_to_s' );
+const isCI = require( '../utils/environment/is_ci' );
 
 module.exports = fwEnv => {
 
   const info = [];
+  info.push( `CI Env: ${isCI()}` );
   info.push( `Tests: ${fwEnv.testsPaths.length}` );
   if ( fwEnv.blockPaths.beforeAll ) {
     info.push( 'Before All Block: true' );

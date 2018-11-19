@@ -1,4 +1,5 @@
 const maxLength = 40;
+const isCI = require( '../utils/environment/is_ci' );
 const vars = require( '../utils/console/std_vars' );
 const repeatSpace = require( '../utils/console/print/repeat_space' );
 const readline = require( 'readline' );
@@ -30,16 +31,22 @@ module.exports = {
 
     console.log( 'Running tests...' );
 
-    printProgress( setProgress( createLine( 0 ), 0 ) );
+    if ( !isCI() ) {
+      printProgress( setProgress( createLine( 0 ), 0 ) );
+    }
 
     return {
       update( ) {
         done++;
         const progress = done / size;
         const progressIndex = Math.ceil( maxLength * progress );
-        const humanProgress = ( progress * 100 ).toFixed( 2 );
+        const roundProgress = ( progress * 100 ).toFixed( 2 );
 
-        printProgress( setProgress( createLine( humanProgress ), progressIndex ) );
+        if ( isCI() ) {
+          console.log( `${roundProgress}%` );
+        } else {
+          printProgress( setProgress( createLine( roundProgress ), progressIndex ) );
+        }
 
         if ( progress >= 1 ) {
           console.log();
