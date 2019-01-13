@@ -1,0 +1,7 @@
+{
+  "beforeAll": "tests/before_all",
+  "path": "tests",
+  "afterAll": "tests/after_all",
+  "timeoutTime": 10000,
+  "eventTimeoutTime": 5000
+}

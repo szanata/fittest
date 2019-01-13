@@ -11,7 +11,7 @@ module.exports = {
     try {
       Printer.header( pack );
 
-      const relativeDir = getStackFrameDir( 3 );
+      const relativeDir = params.relativeDir || getStackFrameDir( 3 );
       const emitter = new EventEmitter();
       const fwFeatures = await initFeatures( emitter );
       const fwEnv = initEnvironment( params, fwFeatures, relativeDir );

@@ -5,6 +5,9 @@
     "ecmaVersion": 2018,
     "sourceType": "module"
   },
+  "globals": {
+    "fittest": true
+  },
   "env": {
     "es6": true,
     "node": true,
@@ -22,6 +25,7 @@
     "consistent-return": [ "error", { "treatUndefinedAsUnspecified": true } ],
     "curly": [ "error" ],
     "eqeqeq": [ "error" ],
+    "eol-last": [ "error", "always" ],
     "func-names": 0,
     "generator-star-spacing": [ "error", { "before": true, "after": false } ],
     "global-require": [ "error" ],
@@ -45,6 +49,7 @@
       "LabeledStatement",
       "WithStatement"
     ],
+    "no-return-await": ["error"],
     "no-template-curly-in-string": 0,
     "no-trailing-spaces": [ "error" ],
     "no-underscore-dangle": 0,
@@ -63,8 +68,5 @@
     "space-in-parens": [ "error", "always" ],
     "space-infix-ops": [ "error" ],
     "space-unary-ops": [ "error", { "words": true, "nonwords": false } ]
-  },
-  "globals": {
-    "fittest": true
   }
 }

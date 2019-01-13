@@ -1,6 +1,6 @@
 {
   "name": "fittest",
-  "version": "5.2.0",
+  "version": "6.0.0",
   "description": "fittest (Fast Integration Test) is a tool to create integration tests",
   "main": "./core/index.js",
   "dependencies": {
@@ -15,11 +15,15 @@
     "lint": "eslint './core' --fix && eslint './test' --fix",
     "test:unit": "jest --testPathIgnorePatterns=\"/node_modules|test.js|base_dir|/test/\" 2>&1",
     "test:basic": "node ./test/basic_tests",
+    "test:cli": "(cd ./test/cli_test/ && fittest)",
     "test:retry": "node ./test/retry_tests",
     "test:no_tests": "node ./test/no_tests_test",
     "test:invalid_block": "node ./test/invalid_block_tests",
     "test:broken": "node ./test/broken_tests",
-    "test": "npm run test:basic && npm run test:retry && npm run test:unit"
+    "test": "npm run test:basic && npm run test:retry && npm run test:unit && npm run test:cli"
+  },
+  "bin": {
+    "fittest": "./core/cli.js"
   },
   "repository": {
     "type": "git",

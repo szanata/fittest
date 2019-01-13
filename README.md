@@ -7,7 +7,7 @@
 
 - Create, organize and run complex multi step integration test scripts
 - Use maximum parallelism and process isolation
-- Use webhooks to test your services on a public url each test spins
+- Use webhooks to test your services on a public url which every test creates
 - Write tests your way, this is just a shell
 - Use your favorite libraries to assert code, make http request, etc
 - Get detailed breakdown of each step timing
@@ -29,27 +29,22 @@
 npm install fittest
 ```
 
-### 2. Create a startup .js file on your project to run the tests
+### 2. Create a config file
 
-```
-project    
-|-- test_index.js    
-```
-
-This is a start point, were the options are set and the whole thing starts.
+`.fittestconfig`
 
 ```js
-const fittest = require( 'fittest' );
-
-fittest.run( { testsDir: './tests' } );
+{
+  "path": "./tests"
+}
 ```
 
-### 3. Create a folder for the actual tests
+### 3. Create your tests folder
 
 ```
-project    
-|-- test_index.js
-|-- tests
+project
+|-- .fittestconfig
+|-- tests/
 ```
 
 ### 4. Create some tests
@@ -75,6 +70,22 @@ fittest( 'Your test name', test => {
 });
 ```
 
+### 5. Run your tests
+
+Simple execute a cmd
+```bash
+$ fittest
+```
+
+or add to your `package.json`:
+```js
+...
+  "scripts": {
+    "integration_tests": "fittest"
+  }
+...
+```
+
 ## Anatomy of a test
 
 Every test consist of *n* steps (`step`), which will run synchronously.
@@ -91,7 +102,7 @@ Also, tests can have hooks: *before*, *beforeEach*, *after*, *afterEach*.
 
 All test methods will receive the same argument: `context`. It is used to share values between each test method.
 
-It's a js `Map` like object, but unfortunately there are some restrictions using it: do not set any keys or values different than Number, String, Boolean, Arrays or Literal Objects. This limitations is due the way this object will be serialized to be shared across the test methods or between blocks.
+It's a js `Map` like object, but unfortunately there are some restrictions using it: do not set any keys or values different than Number, String, Boolean, Arrays or Literal Objects. This limitations is due the way this object will be serialized to be shared across the test methods or between blocks. Remember that each test run in a isolated node process.
 
 ### *fittest* Function
 
@@ -120,7 +131,7 @@ Methods:
 
 #### *.step()* usage:
 
-This is the most basic tool to write a test. Conceptually a spet is a atomic operation which should be accomplished as a part of a test itselft. Eg: On a test of a CRUD, a step is a POST, a PUT, a GET or a DELETE.
+This is the most basic tool to write a test. Conceptually a step is a atomic operation which should be accomplished as a part of a test itselft. Eg: On a test of a CRUD, a step is a POST, a PUT, a GET or a DELETE.
 
 It receives two arguments, the name of the step, and a function with the actual code to be run. It will return `step Object` which have just one method `.undo()`, which receives a function with the code to undo this step (if needed). Wherever any step throws errors or not, each *undo* from previous steps will be invoked in the reverse order.
 
@@ -128,7 +139,7 @@ The steps and their rollbacks will resolve synchronously and in order of declara
 
 ##### Example with errors
 
-Given a test wich declared 6 steps:
+Given a test which declared 6 steps:
 
 ```js
 test.step('1', () => {} ).undo( () => {});
@@ -221,17 +232,17 @@ Configurations send to `.run()` method.
 | afterAll | string | | *none* | Path to a script file to run after the tests |
 | beforeAll | string | | *none* | Path to a script file to run before the tests |
 | eventTimeoutTime | number | | 1 minute | The time in milliseconds to wait before a async event is killed due timeout |
-| testsDir | string | **yes** | *none* | The directory where the tests will be read from |
+| path | string | **yes** | *none* | The directory where the tests will be read from |
 | timeoutTime | number | | 5 minutes | The time in milliseconds to wait before a test is killed due timeout |
 | retries | number | | 0 | Number of retries to perform on each test that fails |
 
 
 ## Tests path
 
-The tests path (`testsDir` options) is where your tests are located, this can be either a folder or a single `.js` file. The configuration follow these rules:
+The tests path (`path` options) is where your tests are located, this can be either a folder or a single `.js` file. The configuration follow these rules:
 
-- If a folder is provided, it will read it recursivelly searching for:
-  - Any `index.js` filde inside a directory that ends with `_test` in its name. Eg.: `foo_tests/index.js`
+- If a folder is provided, it will read it recursively searching for:
+  - Any `index.js` file inside a directory that ends with `_test` in its name. Eg.: `foo_tests/index.js`
   - Any file which the name ends in `.test.js`. Eg.: `my_super_awesome.test.js`
 - If a single file path is provided, it will read as a test (If it is a `.js` file)
 - Otherwise it will throw a error
@@ -241,7 +252,7 @@ Examples:
 Given that the `path` folder is `./tests`:
 ```
 project    
-|-- run_tests.js
+|-- .fittestconfig
 |-- tests
     |-- anything_test
         |-- index.js // this is called!
@@ -258,7 +269,7 @@ project
 Given that the `path` folder is `./tests/foo.js`:
 ```
 project    
-|-- run_tests.js
+|-- .fittestconfig
 |-- tests
     |-- anything_test // not called
         |-- index.js

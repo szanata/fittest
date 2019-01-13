@@ -7,6 +7,7 @@ const runValidations = require( './run_validations' );
 userOpts:
 
 | testsDir | string | **yes** | *none* | The directory where the tests will be read from |
+| path | string | **yes** | *none* | Alias for "testsDir" |
 | timeoutTime | number | | 5 minutes | The time in milliseconds to wait before a test is killed due timeout |
 | eventTimeoutTime | number | | 1 minute | The time in milliseconds to wait before a async event is killed due timeout |
 | retries | number | | 0 | Number of retries to perform on each test that fails |
@@ -27,7 +28,7 @@ module.exports = {
     fwEnv.features = fwFeatures;
     fwEnv.relativeDir = relativeDir;
 
-    fwEnv.testsPaths = getTestsPaths( relativeDir, userOpts.testsDir );
+    fwEnv.testsPaths = getTestsPaths( relativeDir, userOpts.path || userOpts.testsDir );
 
     if ( fwEnv.testsPaths.length === 0 ) {
       console.log( 'Sorry. No tests found. Bye ;)' );
