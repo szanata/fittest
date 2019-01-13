@@ -20,7 +20,7 @@
     "test:no_tests": "node ./test/no_tests_test",
     "test:invalid_block": "node ./test/invalid_block_tests",
     "test:broken": "node ./test/broken_tests",
-    "test": "npm run test:basic && npm run test:retry && npm run test:unit && npm run test:cli"
+    "test": "npm run test:unit && npm run test:basic && npm run test:retry && npm link && npm run test:cli"
   },
   "bin": {
     "fittest": "./core/cli.js"
