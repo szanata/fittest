@@ -225,7 +225,7 @@ const response = await env.asyncEvent( 'http-get' );
 
 ## Options
 
-Configurations send to `.run()` method.
+Environment config set on the `.fittestconfig` file, which must be formatted as JSON file (double quotes):
 
 | Property | Type | Required | Default | Description |
 | -------- | ---- | -------- | ------- | ---------- |
