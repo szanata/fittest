@@ -28,7 +28,7 @@ module.exports = fwEnv => {
     bc.box.thin.conn.r;
 
   console.log( `${bc.extras.round.cnr.tl}${bar}${bc.extras.round.cnr.tr} ` );
-  console.log( padBetween( `${bc.box.thin.v} fittest: Test suite setup`, ` ${bc.box.thin.v}`, length, ' ' ) );
+  console.log( padBetween( `${bc.box.thin.v} fittest setup`, ` ${bc.box.thin.v}`, length, ' ' ) );
   console.log( separator );
   info.map( c =>
     padBetween( `${bc.box.thin.v} ${c}`, ` ${bc.box.thin.v}`, length, ' ' )

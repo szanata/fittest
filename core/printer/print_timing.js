@@ -2,6 +2,7 @@ const msToS = require( '../utils/time/ms_to_s' );
 const vars = require( '../utils/console/std_vars' );
 const bc = require( '../utils/console/box_chars' );
 const repeatChar = require( '../utils/console/print/repeat_char' );
+const { mean, zScore, std } = require( '../utils/math' );
 
 const colors = {
   before: vars.fg.magenta + vars.dim,
@@ -12,7 +13,7 @@ const colors = {
   main: vars.fg.blue
 };
 
-const gridLayout = [ 66, 11 ];
+const gridLayout = [ 68, 9 ];
 const columnsLabels = [ 'Feature', 'Time' ];
 
 const printGridBottom = () => console.log(
@@ -54,13 +55,15 @@ const printRow = ( info, infoColor = '' ) => {
   } );
 };
 
-const printEmptyRow = () => printRow( [ ' ', ' ' ] );
+const printEmptyRow = () => printRow( gridLayout.map( () => ' ' ) );
 
-const colorize = ( ok, invoked, color ) => {
+const colorize = ( ok, invoked, color, overThreshold = false ) => {
   if ( !ok ) {
     return vars.fg.red + vars.strikethrough;
   } else if ( !invoked ) {
     return vars.dim + vars.fg.white;
+  } else if ( overThreshold ) {
+    return vars.bg.black + color;
   }
   return color;
 };
@@ -91,10 +94,11 @@ const printResult = ( label, result, color ) => {
   printRow( [ label, etInfo ], fmt );
 };
 
-const printRunnable = ( label, runnable, color ) => {
+const printRunnable = ( label, runnable, color, score = 0 ) => {
   const { result, invoked } = runnable;
   const etInfo = invoked ? `${msToS( result.et )}s` : '-';
-  const fmt = colorize( result.ok, invoked, color );
+  const overThreshold = invoked && score > 3;
+  const fmt = colorize( result.ok, invoked, color, overThreshold );
   const text = label + ( !invoked && result.ok ? ' *not invoked' : '' );
   printRow( [ text, etInfo ], fmt );
 };
@@ -109,6 +113,8 @@ module.exports = fwResult => {
   if ( fwResult.states.afterAll ) {
     printRunnable( '[Block] afterAll', fwResult.states.afterAll, colors.after );
   }
+
+  const statistics = fwResult.consolidateStatistics();
 
   const testsCount = fwResult.states.tests.length;
   if ( testsCount > 0 ) {
@@ -132,7 +138,8 @@ module.exports = fwResult => {
       } );
 
       test.steps.forEach( step => {
-        printRunnable( ` [Step] "${step.name}"`, step, colors.h2 );
+        const score = zScore( step.result.et, statistics.steps.mean, statistics.steps.std );
+        printRunnable( ` [Step] "${step.name}"`, step, colors.h2, score );
 
         step.beforeHooks.forEach( hook => {
           printRunnable( `  (${hook.type})`, hook, colors.before );

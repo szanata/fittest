@@ -1,17 +1,16 @@
-# fittest (Fast InTegration TEST)
+# fittest
 [![Build Status](https://travis-ci.org/szanata/fittest.svg?branch=master)](https://travis-ci.org/szanata/fittest)
 
-**fittest** (Fast InTegration TESTs) is a tool to create integration tests.
+**fittest** is a tool to create black box tests or api tests.
 
 ## Main features
 
-- Create, organize and run complex multi step integration test scripts
-- Use maximum parallelism and process isolation
-- Use webhooks to test your services on a public url which every test creates
+- Create, organize and run complex multi step test scripts
+- Maximum parallelism and process isolation
+- Use test url to test your webhooks!
 - Write tests your way, this is just a shell
-- Use your favorite libraries to assert code, make http request, etc
+  - Use your favorite libraries to assert code, make http request, etc
 - Get detailed breakdown of each step timing
-- Coming soon: Get detailed timing on each http request
 
 ## Table of content
 
@@ -81,7 +80,7 @@ or add to your `package.json`:
 ```js
 ...
   "scripts": {
-    "integration_tests": "fittest"
+    "my_tests": "fittest"
   }
 ...
 ```

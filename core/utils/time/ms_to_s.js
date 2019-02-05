@@ -1,1 +1,1 @@
-module.exports = t => ( t / 1000 ).toFixed( 3 );
+module.exports = t => ( t / 1000 ).toFixed( 1 );
