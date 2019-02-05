@@ -2,7 +2,7 @@ const msToS = require( '../utils/time/ms_to_s' );
 const vars = require( '../utils/console/std_vars' );
 const bc = require( '../utils/console/box_chars' );
 const repeatChar = require( '../utils/console/print/repeat_char' );
-const { mean, zScore, std } = require( '../utils/math' );
+const { zScore } = require( '../utils/math' );
 
 const colors = {
   before: vars.fg.magenta + vars.dim,

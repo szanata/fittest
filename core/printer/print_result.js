@@ -14,9 +14,9 @@ module.exports = fwResults => {
   info.push( `Tests: ${fwResults.states.tests.length}` );
   info.push( `Total time: ${toHuman( fwResults.et )}` );
   info.push( `Result: ${fwResults.ok ? 'passed' : 'broken'}` );
-  info.push( `Tests mean time: ${msToS(statistics.tests.std)}s` );
-  info.push( `Steps mean time: ${msToS(statistics.steps.std)}s` );
-  
+  info.push( `Tests mean time: ${msToS( statistics.tests.std )}s` );
+  info.push( `Steps mean time: ${msToS( statistics.steps.std )}s` );
+
   const length = info.slice().sort( ( a, b ) => b.length - a.length )[0].length + 4;
   const bar = repeatChar( length - 2, bc.box.thin.h );
   const separator = bc.box.thin.conn.l +
