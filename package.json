@@ -4,13 +4,13 @@
   "description": "fittest (Fast Integration Test) is a tool to create integration tests",
   "main": "./core/index.js",
   "dependencies": {
-    "ngrok": "^3.0.1"
+    "ngrok": "^3.1.1"
   },
   "devDependencies": {
     "axios": "^0.18.0",
     "chai": "^4.2.0",
-    "eslint": "^5.3.0",
-    "jest": "^23.6.0"
+    "eslint": "^5.15.3",
+    "jest": "^24.5.0"
   },
   "scripts": {
     "lint": "eslint './core' --fix && eslint './test' --fix",

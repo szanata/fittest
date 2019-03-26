@@ -12,6 +12,10 @@
   - Use your favorite libraries to assert code, make http request, etc
 - Get detailed breakdown of each step timing
 
+## Docker
+
+**If running this inside a docker, dont use alpine or slim, as ngrok is currently not working there.**
+
 ## Table of content
 
 - [Setup](#setup)
