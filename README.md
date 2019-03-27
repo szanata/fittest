@@ -14,7 +14,7 @@
 
 ## Docker
 
-**If running this inside a docker, dont use alpine or slim, as ngrok is currently not working there.**
+This project works well on any docker node image, including alpine
 
 ## Table of content
 

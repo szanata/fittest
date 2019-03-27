@@ -1,5 +1,5 @@
 const createLocalServer = require( './create_local_server' );
-const createNgrok = require( './create_ngrok' );
+const createLocalTunnel = require( './create_local_tunnel' );
 
 module.exports = {
   async init( emitter ) {
@@ -14,9 +14,9 @@ module.exports = {
     }
 
     try {
-      serverUrl = await createNgrok( server.address().port );
+      serverUrl = await createLocalTunnel( server.address().port );
     } catch ( err ) {
-      console.log( 'Error starting ngrok', err );
+      console.log( 'Error starting local tunnel', err );
       throw err;
     }
     return { serverUrl };
